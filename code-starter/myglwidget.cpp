@@ -139,39 +139,34 @@ galet*GOGO;
 GOGO->Display(-7,7);
 
 // Boule
-float X;
-float Y;
+
 ball *balle;
-<<<<<<< HEAD
-float Compteur=10;
-m_vitesse=0.1;
 
-X=m_TimeElapsed*m_vitesse;
+m_vitesse=0.06;
 
-    balle->Display(15*cos(X),5*cos(X));
+X+=XDIR*m_vitesse;
+Y+=YDIR*m_vitesse;
 
-
-=======
-if (m_vitesse*m_TimeElapsed*XDIR>8.49)
+if (X>8||X<(-15))
 {
-    const float R=m_vitesse*m_TimeElapsed*XDIR;
+    m_TimeElapsed=0;
     XDIR*=-1;
-    balle->Display(8.48-(m_vitesse*m_TimeElapsed*XDIR-10),Y+YDIR);
+
+}
+if (Y>5||Y<(-4))
+{
+    m_TimeElapsed=0;
+    YDIR*=-1;
+
 }
 
-if (m_vitesse*m_TimeElapsed*XDIR<-15.49)
+
+else
 {
-    const float R=m_vitesse*m_TimeElapsed*XDIR;
-    XDIR*=-1;
-    balle->Display(-15.48-(m_vitesse*m_TimeElapsed*XDIR-10),Y+YDIR);
+    balle->Display(X,Y);
 }
-float Compteur;
-if (Compteur!=m_TimeElapsed)
-{
-    Compteur=m_TimeElapsed;
-    balle->Display(m_vitesse*m_TimeElapsed*XDIR,m_vitesse*m_TimeElapsed*YDIR);
-}
->>>>>>> test
+
+
 }
 
 

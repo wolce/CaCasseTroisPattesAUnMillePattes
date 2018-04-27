@@ -41,11 +41,13 @@ private:
     bool primitive;
     bool condition;
     bool masquage;
+    float X=0.0;
+    float Y=0.0;
     int r;
     int v;
     int b;
-    int XDIR;//X direction
-    int YDIR;//Y direction
+    int XDIR=1;//X direction
+    int YDIR=-1;//Y direction
     float m_vitesse;
     // Timer d'animation
     float m_TimeElapsed { 0.0f };
