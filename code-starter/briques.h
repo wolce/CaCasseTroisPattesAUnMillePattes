@@ -12,12 +12,15 @@
 class Briques
 {
 public:
-    Briques();
+    Briques(float x, float y, bool Zbuffer);
     // Destructeur
     virtual ~Briques();
-    void Display(float x, float y);
+    void Display();
 private:
     int m_nombreDeBriques;
+    float m_x;
+    float m_y;
+    bool m_Zbuffer;
 };
 
 #endif // BRIQUES_H

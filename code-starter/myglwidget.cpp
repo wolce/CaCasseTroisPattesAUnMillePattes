@@ -80,54 +80,11 @@ void MyGLWidget::paintGL()
 
 // Ligne 1
         // Brique 1
-Briques *B1;
-B1->Display(-15,0);
-
-        // Brique 2
-Briques *B2;
-B2->Display(-11,0);
-
-        // Brique 3
-Briques *B3;
-B3->Display(-7,0);
-
-        // Brique 4
-Briques *B4;
-B4->Display(-3,0);
-
-        // Brique 5
-Briques *B5;
-B5->Display(1,0);
-
-        // Brique 6
-Briques *B6;
-B6->Display(5,0);
+Briques B1(-15,0,true);
+//B1(-15,0,true);
+B1.Display();
 
 
-// Ligne 2
-// Brique 1
-Briques *B7;
-B7->Display(-15,4);
-
-// Brique 2
-Briques *B8;
-B8->Display(-11,4);
-
-// Brique 3
-Briques *B9;
-B9->Display(-7,4);
-
-// Brique 4
-Briques *B10;
-B10->Display(-3,4);
-
-// Brique 5
-Briques *B11;
-B11->Display(1,4);
-
-// Brique 6
-Briques *B12;
-B12->Display(5,4);
 
 // Les murs
 wall *Mur;
