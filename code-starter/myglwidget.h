@@ -37,6 +37,7 @@ protected:
 
 
 private:
+    bool m_Zbuffer;
     GLenum _Forme;
     bool primitive;
     bool condition;

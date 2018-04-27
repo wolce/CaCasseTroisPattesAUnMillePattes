@@ -80,10 +80,24 @@ void MyGLWidget::paintGL()
 
 // Ligne 1
         // Brique 1
-Briques B1(-15,0,true);
-//B1(-15,0,true);
-B1.Display();
 
+Briques B1(-15,0,true);
+if (X>-15 && X<-12 && m_Zbuffer==true && Y>-1 && Y<0)
+{
+    m_Zbuffer=false;
+    if (X>-14.5 && X<-12.5)
+         {YDIR=-YDIR;}
+    if (Y>-0.9 && Y<-0.1)
+        {XDIR=-XDIR;}
+}
+else if (m_Zbuffer==true)
+{
+    B1.Display();
+}
+else if (m_Zbuffer==false)
+{
+    B1.~Briques();
+}
 
 
 // Les murs
