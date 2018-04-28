@@ -4,7 +4,7 @@
 #include "briques.h"
 #include "wall.h"
 #include "balle.hpp"
-#include "galet.h"
+#include "palet.hpp"
 
 int main(int argc, char *argv[])
 {

@@ -7,8 +7,8 @@ class Balle
 {
 public:
     Balle();
-    virtual ~Balle();
-    void Display(float x, float y);
+    ~Balle();
+    void Display(const float x, const float y);
 private:
     GLUquadric *m_sphere;
     float m_rayon;

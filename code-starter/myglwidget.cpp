@@ -4,7 +4,7 @@
 #include "briques.h"
 #include "wall.h"
 #include "balle.hpp"
-#include "galet.h"
+#include "palet.hpp"
 #include <cmath>
 #include <random>
 #include <QDebug>
@@ -138,7 +138,7 @@ wall *Mur;
 Mur->Construc();
 
  // Galet
-galet*GOGO;
+Palet *GOGO = new Palet();
 GOGO->Display(m_position,m_distance);
 
 // Boule
