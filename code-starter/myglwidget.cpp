@@ -3,7 +3,7 @@
 #include <QDesktopWidget>
 #include "briques.h"
 #include "wall.h"
-#include "ball.h"
+#include "balle.hpp"
 #include "galet.h"
 #include <cmath>
 #include <random>
@@ -143,7 +143,7 @@ GOGO->Display(m_position,m_distance);
 
 // Boule
 
-ball *balle;
+Balle *balle = new Balle();
 
 
 

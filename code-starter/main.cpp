@@ -3,7 +3,7 @@
 #include "myglwidget.h"
 #include "briques.h"
 #include "wall.h"
-#include "ball.h"
+#include "balle.hpp"
 #include "galet.h"
 
 int main(int argc, char *argv[])

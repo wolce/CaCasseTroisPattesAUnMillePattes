@@ -21,10 +21,10 @@ TARGET 	  = TD1
 SOURCES	+= main.cpp myglwidget.cpp \
     briques.cpp \
     wall.cpp \
-    ball.cpp \
-    galet.cpp
+    galet.cpp \
+    balle.cpp
 HEADERS += myglwidget.h \
     briques.h \
     wall.h \
-    ball.h \
-    galet.h
+    galet.h \
+    balle.hpp
