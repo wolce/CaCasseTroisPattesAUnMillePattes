@@ -3,6 +3,7 @@
 wall::wall()
 {
 }
+
 void wall::Construc()
 {
     glBegin(GL_QUADS); // Primitive à afficher et début de la déclaration des vertices de cette primitive
@@ -26,6 +27,7 @@ void wall::Construc()
     glVertex2f(-15.5, 5.5);
     glEnd();
 }
+
 wall::~wall()
 {
 

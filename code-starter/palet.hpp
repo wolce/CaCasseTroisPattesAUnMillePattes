@@ -9,11 +9,13 @@ class Palet
 public:
     Palet();
     virtual ~Palet();
-    void Display(const float position, const float distance);
+    void Display();
+    void decaler(const float x, const float y); // Applique une translation au palet
 private:
-    float m_position;
-    float m_distance;
     float m_couleur[3];
+    float m_largeur;
+    float m_epaisseur;
+    float m_position[2]; // Position du centre du palet
 };
 
 #endif // PALET_H

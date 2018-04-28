@@ -1,6 +1,9 @@
 #ifndef MYGLWIDGET_H
 #define MYGLWIDGET_H
 
+#include "balle.hpp"
+#include "palet.hpp"
+
 #include <QGLWidget>
 #include <QKeyEvent>
 #include <QColor>
@@ -35,13 +38,10 @@ protected:
     // Fonction de gestion d'interactions clavier
     void keyPressEvent(QKeyEvent * event);
 
-
 private:
     bool m_Zbuffer;
     bool m_Zbuffer1;
     bool m_Zbuffer2;
-    float m_position;
-    float m_distance;
     GLenum _Forme;
     bool primitive;
     bool condition;
@@ -58,7 +58,8 @@ private:
     float m_TimeElapsed { 0.0f };
     QTimer m_AnimationTimer;
 
-
+    Balle *m_balle;
+    Palet *m_palet;
 };
 
 #endif // MYGLWIDGET_H

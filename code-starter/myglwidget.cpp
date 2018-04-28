@@ -2,19 +2,19 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include "briques.h"
-#include "wall.h"
+#include "bord.hpp"
 #include "balle.hpp"
 #include "palet.hpp"
 #include <cmath>
 #include <random>
 #include <QDebug>
 
+#include "balle.hpp"
+
 // Declarations des constantes
 const unsigned int WIN_WIDTH  = 1600;
 const unsigned int WIN_HEIGHT = 900;
-const float ASPECT_RATIO      = static_cast<float>(WIN_WIDTH) / WIN_HEIGHT;
-const float ORTHO_DIM         = 20.0f;
-
+const float MAX_DIMENSION     = 50.0f;
 
 // Constructeur
 MyGLWidget::MyGLWidget(QWidget * parent) : QGLWidget(parent)
@@ -39,33 +39,42 @@ MyGLWidget::MyGLWidget(QWidget * parent) : QGLWidget(parent)
 void MyGLWidget::initializeGL()
 {
     // Reglage de la couleur de fond
+    glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
+
+    // Activation du zbuffer
+    glEnable(GL_DEPTH_TEST);
+
+    // Construction des objets
+    m_balle = new Balle();
+    m_palet = new Palet();
+
+    // Reglage de la couleur de fond
     r=255;
     v=255;
     b=255;
     XDIR=1;
     YDIR=1;
-    m_position=0;
-    m_distance=7;
     m_vitesse=0.01;
     condition=false;
     masquage=false;
-    glClearColor(0.0, 0.0, 0.0, 1.0); // Couleur à utiliser lorsqu’on va nettoyer la fenetre ( = le fond)
-
 }
-
 
 // Fonction de redimensionnement
 void MyGLWidget::resizeGL(int width, int height)
 {
     // Definition du viewport (zone d'affichage)
-    glViewport(0,0,width,height);
-    // Definition de la matrice de projection
+    glViewport(0, 0, width, height);
+
+    // Definition et reinitialisation de la matrice de projection
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(-ORTHO_DIM * ASPECT_RATIO, ORTHO_DIM * ASPECT_RATIO, -ORTHO_DIM, ORTHO_DIM, -2.0f * ORTHO_DIM, 2.0f * ORTHO_DIM);
 
-    // Definition de la matrice de modele
+    if(width != 0)
+        glOrtho(-MAX_DIMENSION, MAX_DIMENSION, -MAX_DIMENSION * height / static_cast<float>(width), MAX_DIMENSION * height / static_cast<float>(width), -MAX_DIMENSION * 2.0f, MAX_DIMENSION * 2.0f);
 
+    // Definition et réinitialisation de la matrice de modelisation / visualisation
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 }
 
 
@@ -76,9 +85,20 @@ void MyGLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT); // Effacer le buffer de couleur
 
     // Reinitialisation de la matrice courante
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f); // on place la camera en 0, -3, 10 et on regarde en 0, 0, 0
+
+    // Affichage du palet
+    m_palet->Display();
+
+
+
+
+
 
     // Reglage de la couleur
- glColor3ub(r, v, b);
+    glColor3ub(r, v, b);
 
 // Interactions avec les briques
         // Brique 1
@@ -134,16 +154,8 @@ else if (m_Zbuffer2==false)
 }
 
 // Les murs
-wall *Mur;
-Mur->Construc();
-
- // Galet
-Palet *GOGO = new Palet();
-GOGO->Display(m_position,m_distance);
-
-// Boule
-
-Balle *balle = new Balle();
+Bord *Mur;
+Mur->Display();
 
 
 
@@ -169,7 +181,7 @@ else if (Y<-5)//dessous
 
 else
 {
-    balle->Display(X,Y);
+    m_balle->Display(X,Y);
 }
 }
 
@@ -186,17 +198,17 @@ void MyGLWidget::keyPressEvent(QKeyEvent * event)
         // Le palet va a gauche
         case Qt::Key_Left:
         {
-            m_position-=0.5;
+            m_palet->decaler(-0.5f, 0.0f);
+            break;
         }
 
         // Le palet va a droite
         case Qt::Key_Right:
         {
-            m_position+=0.5;
+            m_palet->decaler(0.5f, 0.0f);
+            break;
         }
 
-
-        // Cas par defaut
         default:
         {
             // Ignorer l'evenement
