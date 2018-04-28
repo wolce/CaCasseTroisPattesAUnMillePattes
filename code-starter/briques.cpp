@@ -15,6 +15,11 @@ void Briques::Display()//j'affiche la brique avec un rapport 1 de hauteur pour 3
     glVertex2f(m_x+3, m_y);
     glEnd();
 }
+void Briques::changeZbuffer()
+{
+    if (m_Zbuffer=true){m_Zbuffer=false;}
+    else if (m_Zbuffer=false){m_Zbuffer=true;}
+}
 Briques::~Briques()
 {
 

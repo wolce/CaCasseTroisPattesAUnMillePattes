@@ -82,23 +82,55 @@ void MyGLWidget::paintGL()
         // Brique 1
 
 Briques B1(-15,0,true);
-if (X>-15 && X<-12 && m_Zbuffer==true && Y>-1 && Y<0)
+float x1=B1.getX();
+float y1=B1.getY();
+bool buffer1=B1.getZbuffer();
+if (X>x1 && X<(x1-3) && buffer1==true && Y>y1-1 && Y<y1)
 {
     m_Zbuffer=false;
-    if (X>-14.5 && X<-12.5)
+    if (X>x1-0.5 && X<x1-2.5)
          {YDIR=-YDIR;}
-    if (Y>-0.9 && Y<-0.1)
+    else if (Y>y1-0.9 && Y<y1-0.1)
         {XDIR=-XDIR;}
+    else
+    {
+        XDIR=-XDIR;
+        YDIR=-YDIR;
+    }
 }
-else if (m_Zbuffer==true)
+else if (buffer1==true)
 {
     B1.Display();
 }
-else if (m_Zbuffer==false)
+else if (buffer1==false)
 {
     B1.~Briques();
 }
-
+Briques B2(-11,0,true);
+float x2=B2.getX();
+float y2=B2.getY();
+bool buffer2=B2.getZbuffer();
+if (X>x2 && X<(x2-3) && buffer2==true && Y>y2-1 && Y<y2)
+{
+    m_Zbuffer=false;
+    if (X>(x2-0.5) && X<(x2-2.5))
+         {YDIR=-YDIR;}
+    else if (Y>y2-0.9 && Y<y2-0.1)
+        {XDIR=-XDIR;}
+    else
+    {
+        XDIR=-XDIR;
+        YDIR=-YDIR;
+    }
+}
+else if (buffer2==true)
+{
+    B2.Display();
+}
+else if (buffer2==false)
+{
+    B2.~Briques();
+}
 
 // Les murs
 wall *Mur;
