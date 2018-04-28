@@ -16,12 +16,14 @@ public:
     // Destructeur
     virtual ~Briques();
     void Display();
-    int getZbuffer() const{return m_Zbuffer;}
+    int getZbuffer() const{return m_Zbuffer1;}
     int getX() const{return m_x;}
     int getY() const{return m_y;}
     void changeZbuffer();
 private:
     bool m_Zbuffer;
+    bool m_Zbuffer1;
+    bool m_Zbuffer2;
     int m_nombreDeBriques;
     float m_x;
     float m_y;

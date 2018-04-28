@@ -44,7 +44,9 @@ void MyGLWidget::initializeGL()
     b=255;
     XDIR=1;
     YDIR=1;
-    m_vitesse=1;
+    m_position=0;
+    m_distance=7;
+    m_vitesse=0.01;
     condition=false;
     masquage=false;
     glClearColor(0.0, 0.0, 0.0, 1.0); // Couleur à utiliser lorsqu’on va nettoyer la fenetre ( = le fond)
@@ -78,16 +80,15 @@ void MyGLWidget::paintGL()
     // Reglage de la couleur
  glColor3ub(r, v, b);
 
-// Ligne 1
+// Interactions avec les briques
         // Brique 1
 
 Briques B1(-15,0,true);
-float x1=B1.getX();
-float y1=B1.getY();
-bool buffer1=B1.getZbuffer();
-if (X>x1 && X<(x1-3) && buffer1==true && Y>y1-1 && Y<y1)
+float x1=-15;//probleme manipulation valeur des classes
+float y1=0;
+if ((X>x1 && X<(x1+3) && m_Zbuffer1==true) && (Y>y1-1 && Y<y1 && m_Zbuffer1==true))
 {
-    m_Zbuffer=false;
+    m_Zbuffer1=false;
     if (X>x1-0.5 && X<x1-2.5)
          {YDIR=-YDIR;}
     else if (Y>y1-0.9 && Y<y1-0.1)
@@ -98,22 +99,22 @@ if (X>x1 && X<(x1-3) && buffer1==true && Y>y1-1 && Y<y1)
         YDIR=-YDIR;
     }
 }
-else if (buffer1==true)
+else if (m_Zbuffer1==true && (X<x1 || X>(x1-3) || Y<y1-1 || Y>y1))
 {
     B1.Display();
 }
-else if (buffer1==false)
+else if (m_Zbuffer1==false)
 {
     B1.~Briques();
 }
+// Brique 2
 Briques B2(-11,0,true);
-float x2=B2.getX();
-float y2=B2.getY();
-bool buffer2=B2.getZbuffer();
-if (X>x2 && X<(x2-3) && buffer2==true && Y>y2-1 && Y<y2)
+float x2=-11;
+float y2=0;
+if ((X>x2 && X<(x2+3) && m_Zbuffer2==true) && (Y>y2-1 && Y<y2 && m_Zbuffer2==true))
 {
-    m_Zbuffer=false;
-    if (X>(x2-0.5) && X<(x2-2.5))
+    m_Zbuffer2=false;
+    if (X>x2-0.5 && X<x2-2.5)
          {YDIR=-YDIR;}
     else if (Y>y2-0.9 && Y<y2-0.1)
         {XDIR=-XDIR;}
@@ -123,11 +124,11 @@ if (X>x2 && X<(x2-3) && buffer2==true && Y>y2-1 && Y<y2)
         YDIR=-YDIR;
     }
 }
-else if (buffer2==true)
+else if (m_Zbuffer2==true && (X<x2 || X>(x2-3) || Y<y2-1 || Y>y2))
 {
     B2.Display();
 }
-else if (buffer2==false)
+else if (m_Zbuffer2==false)
 {
     B2.~Briques();
 }
@@ -136,40 +137,40 @@ else if (buffer2==false)
 wall *Mur;
 Mur->Construc();
 
-
  // Galet
 galet*GOGO;
-GOGO->Display(-7,7);
+GOGO->Display(m_position,m_distance);
 
 // Boule
 
 ball *balle;
 
-m_vitesse=0.06;
+
 
 X+=XDIR*m_vitesse;
 Y+=YDIR*m_vitesse;
 
-if (X>8||X<(-15))
+if (X>8||X<(-15))//droite et gauche mur
 {
     m_TimeElapsed=0;
     XDIR*=-1;
 
 }
-if (Y>5||Y<(-4))
+if (Y>5)// mur du haut
 {
     m_TimeElapsed=0;
     YDIR*=-1;
 
 }
-
+else if (Y<-5)//dessous
+{
+    close();//je détruit la balle car le joueur a perdu
+}
 
 else
 {
     balle->Display(X,Y);
 }
-
-
 }
 
 
@@ -182,42 +183,18 @@ void MyGLWidget::keyPressEvent(QKeyEvent * event)
 {
     switch(event->key())
     {
-        // Changement de couleur du fond
-        case Qt::Key_B:
+        // Le palet va a gauche
+        case Qt::Key_Left:
         {
-            glClearColor(double(rand()%256)/255.0, double(rand()%256)/255.0, double(rand()%256)/255.0, 1.0);
-        break;
+            m_position-=0.5;
         }
 
-        // Changement de couleur de l'objet
-        case Qt::Key_C:
+        // Le palet va a droite
+        case Qt::Key_Right:
         {
-        r=rand()%255;
-        v=rand()%255;
-        b=rand()%255;
+            m_position+=0.5;
         }
 
-        // Affichage/Masquage de l'objet
-        case Qt::Key_H:
-        {
-            masquage=!masquage;
-            break;
-        }
-
-        // Changement de l'objet a afficher
-        case Qt::Key_Space:
-        {
-            if(_Forme==GL_TRIANGLES) {_Forme=GL_QUADS;}
-            else if(_Forme==GL_QUADS){ _Forme=GL_TRIANGLES;}
-            break;
-        }
-
-        // Sortie de l'application
-        case Qt::Key_Escape:
-        {
-        close();
-            break;
-        }
 
         // Cas par defaut
         default:

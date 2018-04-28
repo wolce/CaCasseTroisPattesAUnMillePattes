@@ -38,6 +38,10 @@ protected:
 
 private:
     bool m_Zbuffer;
+    bool m_Zbuffer1;
+    bool m_Zbuffer2;
+    float m_position;
+    float m_distance;
     GLenum _Forme;
     bool primitive;
     bool condition;
