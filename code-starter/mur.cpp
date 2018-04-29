@@ -1,18 +1,10 @@
-#include "bord.hpp"
+#include "mur.hpp"
 
-Bord::Bord()
+Mur::Mur()
 {
-    m_epaisseur = 1.0f;
-    m_largeur = 50.0f;
-    m_visible = true;
-    m_position = 0.0f;
-    m_orientation = 0;
-    m_couleur[0] = 1.0f;
-    m_couleur[1] = 1.0f;
-    m_couleur[2] = 1.0f;
 }
 
-void Bord::Display()
+void Mur::Display()
 {/*
     if (m_orientation == 0)
     {
@@ -62,6 +54,6 @@ void Bord::Display()
 
 }
 
-Bord::~Bord()
+Mur::~Mur()
 {
 }

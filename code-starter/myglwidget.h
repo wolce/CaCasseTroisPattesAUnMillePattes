@@ -3,6 +3,7 @@
 
 #include "balle.hpp"
 #include "palet.hpp"
+#include "mur.hpp"
 
 #include <QGLWidget>
 #include <QKeyEvent>
@@ -48,9 +49,6 @@ private:
     bool masquage;
     float X=0.0;
     float Y=0.0;
-    int r;
-    int v;
-    int b;
     int XDIR=1;//X direction
     int YDIR=-1;//Y direction
     float m_vitesse;
@@ -58,8 +56,9 @@ private:
     float m_TimeElapsed { 0.0f };
     QTimer m_AnimationTimer;
 
-    Balle *m_balle;
-    Palet *m_palet;
+    Balle m_balle;
+    Palet m_palet;
+    Mur m_mur;
 };
 
 #endif // MYGLWIDGET_H

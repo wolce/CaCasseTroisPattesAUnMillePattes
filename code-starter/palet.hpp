@@ -2,20 +2,15 @@
 #define PALET_H
 
 #include <GL/glu.h>
+#include "bloc.hpp"
 
-
-class Palet
+class Palet : public Bloc
 {
 public:
     Palet();
     virtual ~Palet();
-    void Display();
-    void decaler(const float x, const float y); // Applique une translation au palet
+    virtual void Display();
 private:
-    float m_couleur[3];
-    float m_largeur;
-    float m_epaisseur;
-    float m_position[2]; // Position du centre du palet
 };
 
 #endif // PALET_H

@@ -2,7 +2,7 @@
 #include <ctime>
 #include "myglwidget.h"
 #include "briques.h"
-#include "bord.hpp"
+#include "mur.hpp"
 #include "balle.hpp"
 #include "palet.hpp"
 

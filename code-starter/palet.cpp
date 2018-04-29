@@ -1,31 +1,33 @@
+#include <vector>
 #include "palet.hpp"
 
 Palet::Palet()
 {
-    m_largeur = 7.0f;
-    m_epaisseur = 1.0f;
-    m_position[0] = 0.0f; // Position en X
-    m_position[1] = -4.5f; // Position en Y
+    m_points[0][0] = -3.5f;
+    m_points[0][1] = -4.0f;
+    m_points[1][0] = -3.5f;
+    m_points[1][1] = -5.0f;
+    m_points[2][0] = 3.5f;
+    m_points[2][1] = -5.0f;
+    m_points[3][0] = 3.5f;
+    m_points[3][1] = -4.0f;
+
+    m_cotesSpeciaux.push_back({1,4});
+
 }
 
 void Palet::Display()
 {
     glBegin(GL_QUADS);
-        glColor3f(1.0f, 1.0f, 1.0f); // Blanc
-        glVertex2f(m_position[0]-m_largeur/2, m_position[1]+m_epaisseur/2);
-        glVertex2f(m_position[0]-m_largeur/2, m_position[1]-m_epaisseur/2);
-        glVertex2f(m_position[0]+m_largeur/2, m_position[1]-m_epaisseur/2);
-        glVertex2f(m_position[0]+m_largeur/2, m_position[1]+m_epaisseur/2);
+        glColor3f(m_couleurs[0], m_couleurs[1], m_couleurs[2]); // Blanc
+        glVertex2f(m_points[0][0], m_points[0][1]);
+        glVertex2f(m_points[1][0], m_points[1][1]);
+        glVertex2f(m_points[2][0], m_points[2][1]);
+        glVertex2f(m_points[3][0], m_points[3][1]);
     glEnd();
 }
 
 Palet::~Palet()
 {
 
-}
-
-void Palet::decaler(const float x, const float y)
-{
-    m_position[0] = m_position[0] + x;
-    m_position[1] = m_position[1] + y;
 }

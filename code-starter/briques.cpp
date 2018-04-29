@@ -9,6 +9,7 @@ Briques::Briques(float x, float y, bool Zbuffer)// x et y du coin supérieur gau
 void Briques::Display()//j'affiche la brique avec un rapport 1 de hauteur pour 3 de largeur
 {
     glBegin(GL_QUADS);
+    glColor3f(1.0f,1.0f,1.0f);
     glVertex2f(m_x, m_y);
     glVertex2f(m_x, m_y-1);
     glVertex2f(m_x+3, m_y-1);

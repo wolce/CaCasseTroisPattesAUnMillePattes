@@ -1,2 +1,12 @@
 
 *.user
+
+*.o
+
+*.exe
+
+*.Debug
+
+*.Release
+
+*.autosave

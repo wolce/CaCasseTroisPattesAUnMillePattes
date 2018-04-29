@@ -2,7 +2,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include "briques.h"
-#include "bord.hpp"
+#include "mur.hpp"
 #include "balle.hpp"
 #include "palet.hpp"
 #include <cmath>
@@ -10,6 +10,9 @@
 #include <QDebug>
 
 #include "balle.hpp"
+#include "mur.hpp"
+#include "palet.hpp"
+#include "bloc.hpp"
 
 // Declarations des constantes
 const unsigned int WIN_WIDTH  = 1600;
@@ -44,14 +47,9 @@ void MyGLWidget::initializeGL()
     // Activation du zbuffer
     glEnable(GL_DEPTH_TEST);
 
-    // Construction des objets
-    m_balle = new Balle();
-    m_palet = new Palet();
 
-    // Reglage de la couleur de fond
-    r=255;
-    v=255;
-    b=255;
+
+
     XDIR=1;
     YDIR=1;
     m_vitesse=0.01;
@@ -81,8 +79,8 @@ void MyGLWidget::resizeGL(int width, int height)
 // Fonction d'affichage
 void MyGLWidget::paintGL()
 {
-    // Reinitialisation du tampon de couleur
-    glClear(GL_COLOR_BUFFER_BIT); // Effacer le buffer de couleur
+    // Reinitialisation du tampon de couleur et du Z-Buffer
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Reinitialisation de la matrice courante
     glMatrixMode(GL_MODELVIEW);
@@ -90,15 +88,12 @@ void MyGLWidget::paintGL()
     gluLookAt(0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f); // on place la camera en 0, -3, 10 et on regarde en 0, 0, 0
 
     // Affichage du palet
-    m_palet->Display();
+    m_palet.Display();
+    m_mur.Display();
 
 
 
 
-
-
-    // Reglage de la couleur
-    glColor3ub(r, v, b);
 
 // Interactions avec les briques
         // Brique 1
@@ -153,9 +148,7 @@ else if (m_Zbuffer2==false)
     B2.~Briques();
 }
 
-// Les murs
-Bord *Mur;
-Mur->Display();
+
 
 
 
@@ -181,7 +174,8 @@ else if (Y<-5)//dessous
 
 else
 {
-    m_balle->Display(X,Y);
+    m_balle.setCentre(X,Y);
+    m_balle.Display();
 }
 }
 
@@ -198,14 +192,14 @@ void MyGLWidget::keyPressEvent(QKeyEvent * event)
         // Le palet va a gauche
         case Qt::Key_Left:
         {
-            m_palet->decaler(-0.5f, 0.0f);
+            m_palet.decaler(-0.5f, 0.0f);
             break;
         }
 
         // Le palet va a droite
         case Qt::Key_Right:
         {
-            m_palet->decaler(0.5f, 0.0f);
+            m_palet.decaler(0.5f, 0.0f);
             break;
         }
 
