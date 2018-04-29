@@ -52,7 +52,7 @@ void MyGLWidget::initializeGL()
 
     XDIR=1;
     YDIR=1;
-    m_vitesse=0.01;
+    m_vitesse=0.06;
     condition=false;
     masquage=false;
 }
@@ -161,7 +161,7 @@ if (X>8||X<(-15))//droite et gauche mur
     XDIR*=-1;
 
 }
-if (Y>5)// mur du haut
+if (Y>5||Y<-4)// mur du haut
 {
     m_TimeElapsed=0;
     YDIR*=-1;
