@@ -10,6 +10,7 @@ public:
     Palet();
     virtual ~Palet();
     virtual void Display();
+    virtual bool collision(Balle *balle);
 private:
 };
 

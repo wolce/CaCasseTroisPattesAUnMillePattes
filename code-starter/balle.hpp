@@ -10,7 +10,12 @@ public:
     ~Balle();
     void Display();
     void setDirection(const float x, const float y) {m_direction[0]=x;m_direction[1]=y;}
+    float getDirectionX() const {return m_direction[0];}
+    float getDirectionY() const {return m_direction[1];}
     void setCentre(const float x, const float y) {m_positionCentre[0]=x;m_positionCentre[1]=y;}
+    float getCentreX() const {return m_positionCentre[0];}
+    float getCentreY() const {return m_positionCentre[1];}
+    float getRayon() const {return m_rayon;}
 private:
     GLUquadric *m_sphere;
     float m_rayon;

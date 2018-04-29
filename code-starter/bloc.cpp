@@ -7,6 +7,11 @@ Bloc::Bloc()
     m_couleurs[2] = 1.0f;
 }
 
+bool Bloc::collision(Balle *balle)
+{
+    return false;
+}
+
 Bloc::~Bloc()
 {
 

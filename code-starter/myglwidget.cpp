@@ -2,9 +2,6 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include "briques.h"
-#include "mur.hpp"
-#include "balle.hpp"
-#include "palet.hpp"
 #include <cmath>
 #include <random>
 #include <QDebug>
@@ -15,26 +12,23 @@
 #include "bloc.hpp"
 
 // Declarations des constantes
-const unsigned int WIN_WIDTH  = 1600;
-const unsigned int WIN_HEIGHT = 900;
-const float MAX_DIMENSION     = 50.0f;
+#define WIN_WIDTH   600
+#define WIN_HEIGHT  800
+#define MAX_DIMENSION   50.0f
 
-// Constructeur
 MyGLWidget::MyGLWidget(QWidget * parent) : QGLWidget(parent)
 {
     // Reglage de la taille/position
     setFixedSize(WIN_WIDTH, WIN_HEIGHT);
     move(QApplication::desktop()->screen()->rect().center() - rect().center());
-    _Forme=GL_TRIANGLES;
 
-    // Connexion du timer
-    connect(&m_AnimationTimer,  &QTimer::timeout, [&] {
-        m_TimeElapsed += 1.0f / 60.0f;
+    // Timer de rafraîchissement
+    connect(&m_timerFPS,  &QTimer::timeout, [&] {
         updateGL();
     });
 
-    m_AnimationTimer.setInterval(10);
-    m_AnimationTimer.start();
+    m_timerFPS.setInterval(10);
+    m_timerFPS.start();
 }
 
 
@@ -47,14 +41,30 @@ void MyGLWidget::initializeGL()
     // Activation du zbuffer
     glEnable(GL_DEPTH_TEST);
 
+    // Création des murs
+    float pG[4][2] = {{0.0f, 0.0f},
+                      {0.0f, 125.0f},
+                      {2.0f, 125.0f},
+                      {2.0f, 0.0f}};
+    float pH[4][2] = {{2.0f, 125.0f},
+                      {2.0f, 123.0f},
+                      {98.0f, 123.0f},
+                      {98.0f, 125.0f}};
+    float pD[4][2] = {{98.0f, 0.0f},
+                      {98.0f, 125.0f},
+                      {100.0f, 125.0f},
+                      {100.0f, 0.0f}};
+
+    m_murs.push_back(new Mur(pG, 1, 2.0f));
+    m_murs.push_back(new Mur(pD, 2, 98.0f));
+    m_murs.push_back(new Mur(pH, 3, 123.0f));
 
 
-
-    XDIR=1;
-    YDIR=1;
-    m_vitesse=0.06;
-    condition=false;
-    masquage=false;
+/*
+    XDIR=10;
+    YDIR=10;
+    m_vitesse=0.1;
+    */
 }
 
 // Fonction de redimensionnement
@@ -68,7 +78,7 @@ void MyGLWidget::resizeGL(int width, int height)
     glLoadIdentity();
 
     if(width != 0)
-        glOrtho(-MAX_DIMENSION, MAX_DIMENSION, -MAX_DIMENSION * height / static_cast<float>(width), MAX_DIMENSION * height / static_cast<float>(width), -MAX_DIMENSION * 2.0f, MAX_DIMENSION * 2.0f);
+        gluOrtho2D(0.0, 2*MAX_DIMENSION, 0.0, 2*MAX_DIMENSION * height / static_cast<float>(width));
 
     // Definition et réinitialisation de la matrice de modelisation / visualisation
     glMatrixMode(GL_MODELVIEW);
@@ -82,16 +92,27 @@ void MyGLWidget::paintGL()
     // Reinitialisation du tampon de couleur et du Z-Buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0.0, 2*MAX_DIMENSION, 0.0, 2*MAX_DIMENSION * WIN_HEIGHT / WIN_WIDTH);
+
     // Reinitialisation de la matrice courante
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(0.0f, 0.0f, 10.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f); // on place la camera en 0, -3, 10 et on regarde en 0, 0, 0
 
     // Affichage du palet
     m_palet.Display();
-    m_mur.Display();
 
+    // Affichage des murs
+    for(Mur * mur : m_murs)
+    {
+        if (mur->collision(&m_balle) == true)
+            mur->traiterCollision(&m_balle);
+        mur->Display();
+    }
 
+    // Affichage de la balle
+    m_balle.Display();
 
 
 
@@ -122,67 +143,10 @@ else if (m_Zbuffer1==false)
 {
     B1.~Briques();
 }
-// Brique 2
-Briques B2(-11,0,true);
-float x2=-11;
-float y2=0;
-if ((X>x2 && X<(x2+3) && m_Zbuffer2==true) && (Y>y2-1 && Y<y2 && m_Zbuffer2==true))
-{
-    m_Zbuffer2=false;
-    if (X>x2-0.5 && X<x2-2.5)
-         {YDIR=-YDIR;}
-    else if (Y>y2-0.9 && Y<y2-0.1)
-        {XDIR=-XDIR;}
-    else
-    {
-        XDIR=-XDIR;
-        YDIR=-YDIR;
-    }
-}
-else if (m_Zbuffer2==true && (X<x2 || X>(x2-3) || Y<y2-1 || Y>y2))
-{
-    B2.Display();
-}
-else if (m_Zbuffer2==false)
-{
-    B2.~Briques();
-}
 
 
-
-
-
-X+=XDIR*m_vitesse;
-Y+=YDIR*m_vitesse;
-
-if (X>8||X<(-15))//droite et gauche mur
-{
-    m_TimeElapsed=0;
-    XDIR*=-1;
 
 }
-if (Y>5||Y<-4)// mur du haut
-{
-    m_TimeElapsed=0;
-    YDIR*=-1;
-
-}
-else if (Y<-5)//dessous
-{
-    close();//je détruit la balle car le joueur a perdu
-}
-
-else
-{
-    m_balle.setCentre(X,Y);
-    m_balle.Display();
-}
-}
-
-
-
-
-
 
 // Fonction de gestion d'interactions clavier
 void MyGLWidget::keyPressEvent(QKeyEvent * event)
