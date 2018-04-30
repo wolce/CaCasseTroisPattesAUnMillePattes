@@ -133,7 +133,8 @@ void MyGLWidget::paintGL()
     }
 
     // Affichage des briques
-    for(std::vector<Brique *>::iterator it=m_briques.begin() ; it!=m_briques.end() ; ++it)
+
+    for(std::vector<Brique *>::iterator it=m_briques.begin() ; it!=m_briques.end() ; )
     {
         if ((*it)->collision(&m_balle) == true)
         {
@@ -142,9 +143,14 @@ void MyGLWidget::paintGL()
                 (*it)->traiterCollision(&m_balle);
                 m_collision = true;
             }
-            m_briques.erase(it);
+            it = m_briques.erase(it);
+            (*it)->Display();
         }
-        (*it)->Display();
+        else
+        {
+            (*it)->Display();
+            ++it;
+        }
     }
     m_collision = false;
 
