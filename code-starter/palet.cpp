@@ -1,18 +1,22 @@
 #include <vector>
 #include "palet.hpp"
 
-Palet::Palet()
+Palet::Palet(float x, float y, float largeur, float hauteur)
 {
-    m_points[0][0] = 40.0f;
-    m_points[0][1] = 1.0f;
-    m_points[1][0] = 40.0f;
-    m_points[1][1] = 3.0f;
-    m_points[2][0] = 60.0f;
-    m_points[2][1] = 3.0f;
-    m_points[3][0] = 60.0f;
-    m_points[3][1] = 1.0f;
+    m_position[0] = x;
+    m_position[1] = y;
 
-    //m_cotesSpeciaux.push_back({1,4});
+    m_largeur = largeur;
+    m_hauteur = hauteur;
+
+    m_points[0][0] = m_position[0]-m_largeur/2.0f;
+    m_points[0][1] = m_position[1]-m_hauteur/2.0f;
+    m_points[1][0] = m_position[0]-m_largeur/2.0f;
+    m_points[1][1] = m_position[1]+m_hauteur/2.0f;
+    m_points[2][0] = m_position[0]+m_largeur/2.0f;
+    m_points[2][1] = m_position[1]+m_hauteur/2.0f;
+    m_points[3][0] = m_position[0]+m_largeur/2.0f;
+    m_points[3][1] = m_position[1]-m_hauteur/2.0f;
 
     m_vitesse = 2.0f;
 }
@@ -36,10 +40,15 @@ bool Palet::collision(Balle *balle)
     float y = balle->getCentreY();
     float rayon = balle->getRayon();
 
-    if (y-rayon < -4.0f && x>-3.5f && x<3.5f)
+    if (y-rayon < m_points[1][1] && x > m_points[0][0] && x < m_points[2][0])
         return true;
     else
         return false;
+}
+
+void Palet::traiterCollision(Balle *balle)
+{
+    balle->setDirection(balle->getDirectionX(), -balle->getDirectionY());
 }
 
 void Palet::Display()

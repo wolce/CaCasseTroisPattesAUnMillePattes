@@ -47,6 +47,9 @@ void MyGLWidget::initializeGL()
     // Reglage de la couleur de fond
     glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
 
+    // Création du palet
+    m_palet = new Palet(WIDTH/2.0f, 2.0f, 20.0f, 2.0f);
+
     // Création des murs
     float pG[4][2] = {{0.0f, 0.0f},
                       {0.0f, 125.0f},
@@ -104,7 +107,7 @@ void MyGLWidget::resizeGL(int width, int height)
 // Fonction d'affichage
 void MyGLWidget::paintGL()
 {
-    // Reinitialisation du tampon de couleur et du Z-Buffer
+    // Reinitialisation du tampon de couleur
     glClear(GL_COLOR_BUFFER_BIT);
 
     glMatrixMode(GL_PROJECTION);
@@ -116,7 +119,9 @@ void MyGLWidget::paintGL()
     glLoadIdentity();
 
     // Affichage du palet
-    m_palet.Display();
+    if (m_palet->collision(&m_balle) == true)
+        m_palet->traiterCollision(&m_balle);
+    m_palet->Display();
 
     // Affichage des murs
     for(Mur * mur : m_murs)
@@ -149,14 +154,14 @@ void MyGLWidget::keyPressEvent(QKeyEvent * event)
         // Le palet va a gauche
         case Qt::Key_Left:
         {
-            m_palet.decaler(-0.5f, 0.0f);
+            m_palet->decaler(-0.5f, 0.0f);
             break;
         }
 
         // Le palet va a droite
         case Qt::Key_Right:
         {
-            m_palet.decaler(0.5f, 0.0f);
+            m_palet->decaler(0.5f, 0.0f);
             break;
         }
 
