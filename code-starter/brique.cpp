@@ -1,4 +1,5 @@
 #include "brique.hpp"
+#include <math.h>
 
 Brique::Brique(float x, float y, float largeur)// x et y du coin supérieur gauche
 {

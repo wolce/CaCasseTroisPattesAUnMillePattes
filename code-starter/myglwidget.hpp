@@ -53,6 +53,7 @@ private:
     float m_largeurBrique;
     float m_espaceEntreBriquesLigne;
     float m_espaceEntreBriquesColonne;
+    bool m_collision; // Indique s'il y a déjà eu une collision sur une brique dans une exécution paintGL. Permet d'éviter un double inversement de direction de la balle.
 };
 
 #endif // MYGLWIDGET_H

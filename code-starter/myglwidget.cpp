@@ -38,6 +38,7 @@ MyGLWidget::MyGLWidget(QWidget * parent) : QGLWidget(parent)
     m_espaceEntreBriquesLigne = 1.0f;
     m_espaceEntreBriquesColonne = 1.0f;
     m_largeurBrique = (WIDTH-m_espaceEntreBriquesLigne - 4.0f)/m_briquesParLigne - m_espaceEntreBriquesLigne;
+    m_collision = false;
 }
 
 
@@ -136,11 +137,16 @@ void MyGLWidget::paintGL()
     {
         if ((*it)->collision(&m_balle) == true)
         {
-            (*it)->traiterCollision(&m_balle);
+            if (m_collision == false)
+            {
+                (*it)->traiterCollision(&m_balle);
+                m_collision = true;
+            }
             m_briques.erase(it);
         }
         (*it)->Display();
     }
+    m_collision = false;
 
     // Affichage de la balle
     m_balle.Display();

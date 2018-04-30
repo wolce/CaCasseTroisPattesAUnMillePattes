@@ -10,9 +10,9 @@ class Brique : public Bloc
 public:
     Brique(float x, float y, float largeur);
     virtual ~Brique();
-    void Display();
-    bool collision(Balle *balle);
-    void traiterCollision(Balle *balle);
+    virtual void Display();
+    virtual bool collision(Balle *balle);
+    virtual void traiterCollision(Balle *balle);
 private:
     float m_position[2]; // Position du coin supérieur gauche
     float m_largeur;

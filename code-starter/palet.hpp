@@ -11,7 +11,7 @@ public:
     virtual ~Palet();
     virtual void Display();
     virtual bool collision(Balle *balle);
-    void traiterCollision(Balle *balle);
+    virtual void traiterCollision(Balle *balle);
     void decaler(const float x, const float y); // Applique une translation au palet
 private:
     float m_vitesse;
