@@ -1,6 +1,6 @@
 #include "balle.hpp"
 
-Balle::Balle()
+Balle::Balle(float x, float y, float dirX, float dirY)
 {
     m_rayon = 2.0f;
     m_sphere = gluNewQuadric();
@@ -10,11 +10,11 @@ Balle::Balle()
     m_couleur[1] = 0.2f;
     m_couleur[2] = 1.0f;
 
-    m_positionCentre[0] = 10.0f;
-    m_positionCentre[1] = 10.0f;
+    m_positionCentre[0] = x;
+    m_positionCentre[1] = y;
 
-    m_direction[0] = 1.0f;
-    m_direction[1] = 1.0f;
+    m_direction[0] = dirX;
+    m_direction[1] = dirY;
 
     m_vitesse = 0.2f;
 }

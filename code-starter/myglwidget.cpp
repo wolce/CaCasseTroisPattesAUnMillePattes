@@ -74,6 +74,10 @@ void MyGLWidget::initializeGL()
     m_murs.push_back(new Mur(pH, 3, 123.0f));
     m_murs.push_back(new Mur(pB, 4, 2.0f));
 
+    // Création des balles
+    for (int i = 0 ; i < 3 ; ++i)
+        m_balles.push_back(new Balle(10.0f*(i+1), 10.0f*(i+1), 1.0f, 1.0f));
+
     // Création des briques
     for (int i = 0 ; i < m_briquesParLigne ; ++i)
     {
@@ -119,43 +123,52 @@ void MyGLWidget::paintGL()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    // Gestion des collisions pour chaque balle
+    for(Balle * balle : m_balles)
+    {
+        // Collision avec le palet ?
+        if (m_palet->collision(balle) == true)
+            m_palet->traiterCollision(balle);
+
+        // Collision avec un des murs ?
+        for(Mur * mur : m_murs)
+        {
+            if (mur->collision(balle) == true)
+                mur->traiterCollision(balle);
+        }
+
+        // Collision avec une des briques ?
+        for(std::vector<Brique *>::iterator it=m_briques.begin() ; it!=m_briques.end() ; )
+        {
+            if ((*it)->collision(balle) == true)
+            {
+                if (m_collision == false) // Pour éviter qu'il y ait un double inversement de direction de la balle
+                {
+                    (*it)->traiterCollision(balle);
+                    m_collision = true;
+                }
+                it = m_briques.erase(it); // Si on supprime la brique on redéfinit l'itérateur à la position courante
+            }
+            else
+                ++it; // Si la brique n'est pas supprimée on incrémente l'itérateur
+        }
+        m_collision = false;
+    }
+
     // Affichage du palet
-    if (m_palet->collision(&m_balle) == true)
-        m_palet->traiterCollision(&m_balle);
     m_palet->Display();
 
     // Affichage des murs
     for(Mur * mur : m_murs)
-    {
-        if (mur->collision(&m_balle) == true)
-            mur->traiterCollision(&m_balle);
         mur->Display();
-    }
 
     // Affichage des briques
+    for(Brique * brique : m_briques)
+        brique->Display();
 
-    for(std::vector<Brique *>::iterator it=m_briques.begin() ; it!=m_briques.end() ; )
-    {
-        if ((*it)->collision(&m_balle) == true)
-        {
-            if (m_collision == false)
-            {
-                (*it)->traiterCollision(&m_balle);
-                m_collision = true;
-            }
-            it = m_briques.erase(it);
-            (*it)->Display();
-        }
-        else
-        {
-            (*it)->Display();
-            ++it;
-        }
-    }
-    m_collision = false;
-
-    // Affichage de la balle
-    m_balle.Display();
+    // Affichage des balles
+    for(Balle * balle : m_balles)
+        balle->Display();
 }
 
 // Fonction de gestion d'interactions clavier

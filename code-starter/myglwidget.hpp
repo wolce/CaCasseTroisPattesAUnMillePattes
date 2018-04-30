@@ -43,9 +43,9 @@ protected:
 
 private:
     QTimer m_timerFPS;
-    Balle m_balle;
     Palet *m_palet;
     std::vector<Mur *> m_murs;
+    std::vector<Balle *> m_balles;
 
     std::vector<Brique *> m_briques;
     int m_briquesParLigne;

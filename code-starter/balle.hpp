@@ -6,7 +6,7 @@
 class Balle
 {
 public:
-    Balle();
+    Balle(float x, float y, float dirX, float dirY);
     ~Balle();
     void Display();
     void setDirection(const float x, const float y) {m_direction[0]=x;m_direction[1]=y;}
