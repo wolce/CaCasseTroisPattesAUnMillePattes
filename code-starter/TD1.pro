@@ -19,14 +19,15 @@ TARGET 	  = TD1
 
 # fichiers sources/headers
 SOURCES	+= main.cpp myglwidget.cpp \
-    briques.cpp \
     balle.cpp \
     palet.cpp \
     bloc.cpp \
-    mur.cpp
-HEADERS += myglwidget.h \
-    briques.h \
+    mur.cpp \
+    brique.cpp
+HEADERS += \
     balle.hpp \
     palet.hpp \
     bloc.hpp \
-    mur.hpp
+    mur.hpp \
+    myglwidget.hpp \
+    brique.hpp

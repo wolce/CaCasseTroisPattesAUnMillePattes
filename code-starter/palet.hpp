@@ -10,7 +10,10 @@ public:
     Palet();
     virtual ~Palet();
     virtual void Display();
+    virtual bool collision(Balle *balle);
+    void decaler(const float x, const float y); // Applique une translation au palet
 private:
+    float m_vitesse;
 };
 
 #endif // PALET_H

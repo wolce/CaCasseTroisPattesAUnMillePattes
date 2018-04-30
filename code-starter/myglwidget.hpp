@@ -4,6 +4,8 @@
 #include "balle.hpp"
 #include "palet.hpp"
 #include "mur.hpp"
+#include <vector>
+#include <brique.hpp>
 
 #include <QGLWidget>
 #include <QKeyEvent>
@@ -40,25 +42,17 @@ protected:
     void keyPressEvent(QKeyEvent * event);
 
 private:
-    bool m_Zbuffer;
-    bool m_Zbuffer1;
-    bool m_Zbuffer2;
-    GLenum _Forme;
-    bool primitive;
-    bool condition;
-    bool masquage;
-    float X=0.0;
-    float Y=0.0;
-    int XDIR=1;//X direction
-    int YDIR=-1;//Y direction
-    float m_vitesse;
-    // Timer d'animation
-    float m_TimeElapsed { 0.0f };
-    QTimer m_AnimationTimer;
-
+    QTimer m_timerFPS;
     Balle m_balle;
     Palet m_palet;
-    Mur m_mur;
+    std::vector<Mur *> m_murs;
+
+    std::vector<Brique *> m_briques;
+    int m_briquesParLigne;
+    int m_briquesParColonne;
+    float m_largeurBrique;
+    float m_espaceEntreBriquesLigne;
+    float m_espaceEntreBriquesColonne;
 };
 
 #endif // MYGLWIDGET_H
