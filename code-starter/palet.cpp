@@ -14,6 +14,20 @@ Palet::Palet()
 
     //m_cotesSpeciaux.push_back({1,4});
 
+    m_vitesse = 2.0f;
+}
+
+void Palet::decaler(const float x, const float y)
+{
+    m_points[0][0] += x*m_vitesse;
+    m_points[1][0] += x*m_vitesse;
+    m_points[2][0] += x*m_vitesse;
+    m_points[3][0] += x*m_vitesse;
+
+    m_points[0][1] += y*m_vitesse;
+    m_points[1][1] += y*m_vitesse;
+    m_points[2][1] += y*m_vitesse;
+    m_points[3][1] += y*m_vitesse;
 }
 
 bool Palet::collision(Balle *balle)

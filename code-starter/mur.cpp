@@ -1,4 +1,11 @@
 #include "mur.hpp"
+#include "myglwidget.hpp"
+#include <QApplication>
+#include <QDesktopWidget>
+#include <cmath>
+#include <random>
+#include <QDebug>
+#include <iostream>
 
 Mur::Mur(float p[][2], int type, float coord)
 {
@@ -14,6 +21,11 @@ Mur::Mur(float p[][2], int type, float coord)
     m_type = type;
 
     m_coord = coord;
+
+    if (type == 4)
+        m_visible = false;
+    else
+        m_visible = true;
 }
 
 bool Mur::collision(Balle *balle)
@@ -25,6 +37,8 @@ bool Mur::collision(Balle *balle)
         return true;
     else if (m_type == 3 && balle->getCentreY()+rayon > m_coord)
         return true;
+    else if (m_type == 4 && balle->getCentreY()-rayon < m_coord)
+        return true;
     else
         return false;
 }
@@ -35,17 +49,22 @@ void Mur::traiterCollision(Balle *balle)
         balle->setDirection(-balle->getDirectionX(), balle->getDirectionY());
     else if (m_type == 3)
         balle->setDirection(balle->getDirectionX(), -balle->getDirectionY());
+    else if (m_type == 4)
+        balle->~Balle();
 }
 
 void Mur::Display()
 {
-    glBegin(GL_QUADS); // Primitive à afficher et début de la déclaration des vertices de cette primitive
-        glColor3f(1.0f, 1.0f, 1.0f); // Blanc
-        glVertex2f(m_points[0][0], m_points[0][1]);
-        glVertex2f(m_points[1][0], m_points[1][1]);
-        glVertex2f(m_points[2][0], m_points[2][1]);
-        glVertex2f(m_points[3][0], m_points[3][1]);
-    glEnd();
+    if (m_visible == true)
+    {
+        glBegin(GL_QUADS); // Primitive à afficher et début de la déclaration des vertices de cette primitive
+            glColor3f(1.0f, 1.0f, 1.0f); // Blanc
+            glVertex2f(m_points[0][0], m_points[0][1]);
+            glVertex2f(m_points[1][0], m_points[1][1]);
+            glVertex2f(m_points[2][0], m_points[2][1]);
+            glVertex2f(m_points[3][0], m_points[3][1]);
+        glEnd();
+    }
 }
 
 Mur::~Mur()

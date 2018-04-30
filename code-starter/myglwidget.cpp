@@ -1,7 +1,6 @@
-#include "myglwidget.h"
+#include "myglwidget.hpp"
 #include <QApplication>
 #include <QDesktopWidget>
-#include "briques.h"
 #include <cmath>
 #include <random>
 #include <QDebug>
@@ -10,11 +9,15 @@
 #include "mur.hpp"
 #include "palet.hpp"
 #include "bloc.hpp"
+#include "brique.hpp"
+#include <vector>
 
 // Declarations des constantes
 #define WIN_WIDTH   600
 #define WIN_HEIGHT  800
 #define MAX_DIMENSION   50.0f
+float WIDTH = 2*MAX_DIMENSION;
+float HEIGHT = 2*MAX_DIMENSION * WIN_HEIGHT / WIN_WIDTH;
 
 MyGLWidget::MyGLWidget(QWidget * parent) : QGLWidget(parent)
 {
@@ -29,6 +32,12 @@ MyGLWidget::MyGLWidget(QWidget * parent) : QGLWidget(parent)
 
     m_timerFPS.setInterval(10);
     m_timerFPS.start();
+
+    m_briquesParLigne = 10;
+    m_briquesParColonne = 12;
+    m_espaceEntreBriquesLigne = 1.0f;
+    m_espaceEntreBriquesColonne = 1.0f;
+    m_largeurBrique = (WIDTH-m_espaceEntreBriquesLigne - 4.0f)/m_briquesParLigne - m_espaceEntreBriquesLigne;
 }
 
 
@@ -37,9 +46,6 @@ void MyGLWidget::initializeGL()
 {
     // Reglage de la couleur de fond
     glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
-
-    // Activation du zbuffer
-    glEnable(GL_DEPTH_TEST);
 
     // Création des murs
     float pG[4][2] = {{0.0f, 0.0f},
@@ -54,17 +60,24 @@ void MyGLWidget::initializeGL()
                       {98.0f, 125.0f},
                       {100.0f, 125.0f},
                       {100.0f, 0.0f}};
+    float pB[4][2] = {{2.0f, 0.0f},
+                      {2.0f, 2.0f},
+                      {98.0f, 2.0f},
+                      {98.0f, 0.0f}};
 
     m_murs.push_back(new Mur(pG, 1, 2.0f));
     m_murs.push_back(new Mur(pD, 2, 98.0f));
     m_murs.push_back(new Mur(pH, 3, 123.0f));
+    m_murs.push_back(new Mur(pB, 4, 2.0f));
 
-
-/*
-    XDIR=10;
-    YDIR=10;
-    m_vitesse=0.1;
-    */
+    // Création des briques
+    for (int i = 0 ; i < m_briquesParLigne ; ++i)
+    {
+        for (int j = 0 ; j < m_briquesParColonne ; ++j)
+        {
+            m_briques.push_back(new Brique((i+1)*m_espaceEntreBriquesLigne + 2.0f + i*m_largeurBrique, 123.0f-(j+1)*m_espaceEntreBriquesColonne - j*m_largeurBrique/3.0f, m_largeurBrique));
+        }
+    }
 }
 
 // Fonction de redimensionnement
@@ -77,8 +90,10 @@ void MyGLWidget::resizeGL(int width, int height)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    if(width != 0)
-        gluOrtho2D(0.0, 2*MAX_DIMENSION, 0.0, 2*MAX_DIMENSION * height / static_cast<float>(width));
+    if(width != 0) {
+        HEIGHT = 2*MAX_DIMENSION * height / static_cast<float>(width);
+        gluOrtho2D(0.0, WIDTH, 0.0, HEIGHT);
+    }
 
     // Definition et réinitialisation de la matrice de modelisation / visualisation
     glMatrixMode(GL_MODELVIEW);
@@ -90,11 +105,11 @@ void MyGLWidget::resizeGL(int width, int height)
 void MyGLWidget::paintGL()
 {
     // Reinitialisation du tampon de couleur et du Z-Buffer
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(0.0, 2*MAX_DIMENSION, 0.0, 2*MAX_DIMENSION * WIN_HEIGHT / WIN_WIDTH);
+    gluOrtho2D(0.0, WIDTH, 0.0, HEIGHT);
 
     // Reinitialisation de la matrice courante
     glMatrixMode(GL_MODELVIEW);
@@ -111,41 +126,19 @@ void MyGLWidget::paintGL()
         mur->Display();
     }
 
+    // Affichage des briques
+    for(std::vector<Brique *>::iterator it=m_briques.begin() ; it!=m_briques.end() ; ++it)
+    {
+        if ((*it)->collision(&m_balle) == true)
+        {
+            (*it)->traiterCollision(&m_balle);
+            m_briques.erase(it);
+        }
+        (*it)->Display();
+    }
+
     // Affichage de la balle
     m_balle.Display();
-
-
-
-// Interactions avec les briques
-        // Brique 1
-
-Briques B1(-15,0,true);
-float x1=-15;//probleme manipulation valeur des classes
-float y1=0;
-if ((X>x1 && X<(x1+3) && m_Zbuffer1==true) && (Y>y1-1 && Y<y1 && m_Zbuffer1==true))
-{
-    m_Zbuffer1=false;
-    if (X>x1-0.5 && X<x1-2.5)
-         {YDIR=-YDIR;}
-    else if (Y>y1-0.9 && Y<y1-0.1)
-        {XDIR=-XDIR;}
-    else
-    {
-        XDIR=-XDIR;
-        YDIR=-YDIR;
-    }
-}
-else if (m_Zbuffer1==true && (X<x1 || X>(x1-3) || Y<y1-1 || Y>y1))
-{
-    B1.Display();
-}
-else if (m_Zbuffer1==false)
-{
-    B1.~Briques();
-}
-
-
-
 }
 
 // Fonction de gestion d'interactions clavier
