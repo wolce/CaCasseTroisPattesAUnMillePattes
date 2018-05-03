@@ -23,11 +23,13 @@ SOURCES	+= main.cpp myglwidget.cpp \
     palet.cpp \
     bloc.cpp \
     mur.cpp \
-    brique.cpp
+    brique.cpp \
+    sol.cpp
 HEADERS += \
     balle.hpp \
     palet.hpp \
     bloc.hpp \
     mur.hpp \
     myglwidget.hpp \
-    brique.hpp
+    brique.hpp \
+    sol.hpp

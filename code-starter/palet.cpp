@@ -34,7 +34,7 @@ void Palet::decaler(const float x, const float y)
     m_points[3][1] += y*m_vitesse;
 }
 
-bool Palet::collision(Balle *balle)
+bool Palet::collision(Balle* &balle)
 {
     float x = balle->getCentreX();
     float y = balle->getCentreY();
@@ -46,7 +46,7 @@ bool Palet::collision(Balle *balle)
         return false;
 }
 
-void Palet::traiterCollision(Balle *balle)
+void Palet::traiterCollision(Balle* &balle)
 {
     balle->setDirection(balle->getDirectionX(), -balle->getDirectionY());
 }

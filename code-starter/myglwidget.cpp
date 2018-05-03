@@ -4,12 +4,14 @@
 #include <cmath>
 #include <random>
 #include <QDebug>
+#include <iostream>
 
 #include "balle.hpp"
 #include "mur.hpp"
 #include "palet.hpp"
 #include "bloc.hpp"
 #include "brique.hpp"
+#include "sol.hpp"
 #include <vector>
 
 // Declarations des constantes
@@ -72,7 +74,7 @@ void MyGLWidget::initializeGL()
     m_murs.push_back(new Mur(pG, 1, 2.0f));
     m_murs.push_back(new Mur(pD, 2, 98.0f));
     m_murs.push_back(new Mur(pH, 3, 123.0f));
-    m_murs.push_back(new Mur(pB, 4, 2.0f));
+    m_sol = new Sol(pB, 2.0f);
 
     // Création des balles
     for (int i = 0 ; i < 3 ; ++i)
@@ -124,29 +126,47 @@ void MyGLWidget::paintGL()
     glLoadIdentity();
 
     // Gestion des collisions pour chaque balle
-    for(Balle * balle : m_balles)
+    std::vector<Balle *>::iterator itBalle=m_balles.begin();
+    while (itBalle != m_balles.end())
     {
+         std::cout << (*itBalle)->getCentreX() << endl;
         // Collision avec le palet ?
-        if (m_palet->collision(balle) == true)
-            m_palet->traiterCollision(balle);
+        if (m_palet->collision(*itBalle) == true)
+            m_palet->traiterCollision(*itBalle);
+
+        if (m_sol->collision(*itBalle) == true)
+        {
+            delete *itBalle;
+            itBalle = m_balles.erase(itBalle);
+        }
+        else
+            ++itBalle;
+
+        std::cout << (*itBalle)->getCentreX()<< endl;
+        std::cout << "a" << std::endl;
+        std::cout << (*itBalle)->getCentreX()<< endl;
+
 
         // Collision avec un des murs ?
         for(Mur * mur : m_murs)
         {
-            if (mur->collision(balle) == true)
-                mur->traiterCollision(balle);
+            if (mur->collision(*itBalle) == true)
+                mur->traiterCollision(*itBalle);
         }
+         std::cout << "b" << std::endl;
+          std::cout << m_balles.size() << std::endl;
 
         // Collision avec une des briques ?
         for(std::vector<Brique *>::iterator it=m_briques.begin() ; it!=m_briques.end() ; )
         {
-            if ((*it)->collision(balle) == true)
+            if ((*it)->collision(*itBalle) == true)
             {
                 if (m_collision == false) // Pour éviter qu'il y ait un double inversement de direction de la balle
                 {
-                    (*it)->traiterCollision(balle);
+                    (*it)->traiterCollision(*itBalle);
                     m_collision = true;
                 }
+                delete *it;
                 it = m_briques.erase(it); // Si on supprime la brique on redéfinit l'itérateur à la position courante
             }
             else
@@ -154,7 +174,7 @@ void MyGLWidget::paintGL()
         }
         m_collision = false;
     }
-
+ std::cout << "c" << std::endl;
     // Affichage du palet
     m_palet->Display();
 
@@ -169,6 +189,7 @@ void MyGLWidget::paintGL()
     // Affichage des balles
     for(Balle * balle : m_balles)
         balle->Display();
+     std::cout << "d" << std::endl;
 }
 
 // Fonction de gestion d'interactions clavier
@@ -201,4 +222,22 @@ void MyGLWidget::keyPressEvent(QKeyEvent * event)
     // Acceptation de l'evenement et mise a jour de la scene
     event->accept();
     updateGL();
+}
+
+ MyGLWidget::~MyGLWidget()
+{
+    for (Mur * mur : m_murs)
+        delete mur;
+    m_murs.clear();
+
+    for (Balle * balle : m_balles)
+        delete balle;
+    m_balles.clear();
+
+    for (Brique * brique : m_briques)
+        delete brique;
+    m_briques.clear();
+
+    delete m_sol;
+    delete m_palet;
 }
