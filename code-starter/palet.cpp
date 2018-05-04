@@ -33,6 +33,9 @@ void Palet::decaler(const float x, const float y)
     m_points[1][1] += y*m_vitesse;
     m_points[2][1] += y*m_vitesse;
     m_points[3][1] += y*m_vitesse;
+
+    m_position[0] += x;
+    m_position[1] += y;
 }
 
 bool Palet::collision(Balle *balle)
@@ -52,11 +55,11 @@ void Palet::traiterCollision(Balle *balle)
     float x = balle->getCentreX();
 
     if (x<m_position[0])
-        balle->setDirection(-1.0f, sin(90-(x-m_position[0])*(60/m_largeur)));
+        balle->setDirection(-(x-m_position[0])/(m_largeur), 1-(x-m_position[0])/(m_largeur));
     else if (x>m_position[0])
-        balle->setDirection(1.0f, sin(90-(x-m_position[0])*(60/m_largeur)));
+        balle->setDirection((x-m_position[0])/(m_largeur), 1-(x-m_position[0])/(m_largeur));
     else if (x==m_position[0])
-        balle->setDirection(0.0f, -balle->getDirectionY());
+        balle->setDirection((x-m_position[0])/(m_largeur), 1-(x-m_position[0])/(m_largeur));
 }
 
 void Palet::Display()
