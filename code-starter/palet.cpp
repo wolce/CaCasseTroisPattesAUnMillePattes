@@ -1,4 +1,5 @@
 #include <vector>
+#include <cmath>
 #include "palet.hpp"
 
 Palet::Palet(float x, float y, float largeur, float hauteur)
@@ -48,7 +49,14 @@ bool Palet::collision(Balle *balle)
 
 void Palet::traiterCollision(Balle *balle)
 {
-    balle->setDirection(balle->getDirectionX(), -balle->getDirectionY());
+    float x = balle->getCentreX();
+
+    if (x<m_position[0])
+        balle->setDirection(-1.0f, sin(90-(x-m_position[0])*(60/m_largeur)));
+    else if (x>m_position[0])
+        balle->setDirection(1.0f, sin(90-(x-m_position[0])*(60/m_largeur)));
+    else if (x==m_position[0])
+        balle->setDirection(0.0f, -balle->getDirectionY());
 }
 
 void Palet::Display()
