@@ -38,7 +38,7 @@ void Palet::decaler(const float x, const float y)
     m_position[1] += y;
 }
 
-bool Palet::collision(Balle *balle)
+bool Palet::collision(Balle* &balle)
 {
     float x = balle->getCentreX();
     float y = balle->getCentreY();
@@ -50,7 +50,7 @@ bool Palet::collision(Balle *balle)
         return false;
 }
 
-void Palet::traiterCollision(Balle *balle)
+void Palet::traiterCollision(Balle* &balle)
 {
     float x = (balle->getCentreX() - m_points[0][0])/m_largeur; // Position relative de la balle sur le palet (0 au bord gauche et 1 au bord droit)
     x = x * 180.0f; // On ramène à une échelle [0;180]

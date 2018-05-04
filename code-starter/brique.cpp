@@ -9,7 +9,7 @@ Brique::Brique(float x, float y, float largeur)// x et y du coin supérieur gauc
     m_hauteur = largeur/3.0f;
 }
 
-bool Brique::collision(Balle *balle)
+bool Brique::collision(Balle* &balle)
 {
     float x = balle->getCentreX();
     float y = balle->getCentreY();
@@ -21,7 +21,7 @@ bool Brique::collision(Balle *balle)
         return false;
 }
 
-void Brique::traiterCollision(Balle *balle)
+void Brique::traiterCollision(Balle* &balle)
 {
     float x = balle->getCentreX();
     float y = balle->getCentreY();

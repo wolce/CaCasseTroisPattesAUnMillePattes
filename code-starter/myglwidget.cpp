@@ -4,12 +4,14 @@
 #include <cmath>
 #include <random>
 #include <QDebug>
+#include <iostream>
 
 #include "balle.hpp"
 #include "mur.hpp"
 #include "palet.hpp"
 #include "bloc.hpp"
 #include "brique.hpp"
+#include "sol.hpp"
 #include <vector>
 
 // Declarations des constantes
@@ -72,10 +74,10 @@ void MyGLWidget::initializeGL()
     m_murs.push_back(new Mur(pG, 1, 2.0f));
     m_murs.push_back(new Mur(pD, 2, 98.0f));
     m_murs.push_back(new Mur(pH, 3, 123.0f));
-    m_murs.push_back(new Mur(pB, 4, 2.0f));
+    m_sol = new Sol(pB, 2.0f);
 
     // Création des balles
-    for (int i = 0 ; i < 3 ; ++i)
+    for (int i = 0 ; i < 4 ; ++i)
         m_balles.push_back(new Balle(10.0f*(i+1), 10.0f*(i+1), 1.0f, 1.0f));
 
     // Création des briques
@@ -124,37 +126,50 @@ void MyGLWidget::paintGL()
     glLoadIdentity();
 
     // Gestion des collisions pour chaque balle
-    for(Balle * balle : m_balles)
+    std::vector<Balle *>::iterator itBalle=m_balles.begin();
+    std::vector<Brique *>::iterator itBrique;
+    while (itBalle != m_balles.end())
     {
-        // Collision avec le palet ?
-        if (m_palet->collision(balle) == true)
-            m_palet->traiterCollision(balle);
-
-        // Collision avec un des murs ?
-        for(Mur * mur : m_murs)
+        if (m_sol->collision(*itBalle) == true)
         {
-            if (mur->collision(balle) == true)
-                mur->traiterCollision(balle);
+            delete *itBalle;
+            itBalle = m_balles.erase(itBalle);
         }
-
-        // Collision avec une des briques ?
-        for(std::vector<Brique *>::iterator it=m_briques.begin() ; it!=m_briques.end() ; )
+        else
         {
-            if ((*it)->collision(balle) == true)
+            // Collision avec le palet ?
+            if (m_palet->collision(*itBalle) == true)
+                m_palet->traiterCollision(*itBalle);
+
+            // Collision avec un des murs ?
+            for(Mur * mur : m_murs)
             {
-                if (m_collision == false) // Pour éviter qu'il y ait un double inversement de direction de la balle
-                {
-                    (*it)->traiterCollision(balle);
-                    m_collision = true;
-                }
-                it = m_briques.erase(it); // Si on supprime la brique on redéfinit l'itérateur à la position courante
+                if (mur->collision(*itBalle) == true)
+                    mur->traiterCollision(*itBalle);
             }
-            else
-                ++it; // Si la brique n'est pas supprimée on incrémente l'itérateur
-        }
-        m_collision = false;
-    }
 
+            // Collision avec une des briques ?
+            itBrique = m_briques.begin();
+            while(itBrique != m_briques.end())
+            {
+                if ((*itBrique)->collision(*itBalle) == true)
+                {
+                    if (m_collision == false) // Pour éviter qu'il y ait un double inversement de direction de la balle
+                    {
+                        (*itBrique)->traiterCollision(*itBalle);
+                        m_collision = true;
+                    }
+
+                    delete *itBrique;
+                    itBrique = m_briques.erase(itBrique); // Si on supprime la brique on redéfinit l'itérateur à la position courante
+                }
+                else
+                    ++itBrique; // Si la brique n'est pas supprimée on incrémente l'itérateur
+            }
+            m_collision = false;
+            itBalle++;
+        }
+    }
     // Affichage du palet
     m_palet->Display();
 
@@ -201,4 +216,22 @@ void MyGLWidget::keyPressEvent(QKeyEvent * event)
     // Acceptation de l'evenement et mise a jour de la scene
     event->accept();
     updateGL();
+}
+
+ MyGLWidget::~MyGLWidget()
+{
+    for (Mur * mur : m_murs)
+        delete mur;
+    m_murs.clear();
+
+    for (Balle * balle : m_balles)
+        delete balle;
+    m_balles.clear();
+
+    for (Brique * brique : m_briques)
+        delete brique;
+    m_briques.clear();
+
+    delete m_sol;
+    delete m_palet;
 }

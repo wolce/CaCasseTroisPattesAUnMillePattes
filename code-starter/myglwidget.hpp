@@ -5,7 +5,8 @@
 #include "palet.hpp"
 #include "mur.hpp"
 #include <vector>
-#include <brique.hpp>
+#include "brique.hpp"
+#include "sol.hpp"
 
 #include <QGLWidget>
 #include <QKeyEvent>
@@ -27,6 +28,9 @@ public:
     // Constructeur
     MyGLWidget(QWidget * parent = nullptr);
 
+    // Destructeur
+    ~MyGLWidget();
+
 protected:
 
     // Fonction d'initialisation
@@ -46,6 +50,7 @@ private:
     Palet *m_palet;
     std::vector<Mur *> m_murs;
     std::vector<Balle *> m_balles;
+    Sol *m_sol;
 
     std::vector<Brique *> m_briques;
     int m_briquesParLigne;
