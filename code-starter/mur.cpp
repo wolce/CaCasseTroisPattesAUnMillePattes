@@ -21,6 +21,8 @@ Mur::Mur(float p[][2], int type, float coord)
     m_type = type;
 
     m_coord = coord;
+
+    m_visible = true;
 }
 
 bool Mur::collision(Balle* &balle)
