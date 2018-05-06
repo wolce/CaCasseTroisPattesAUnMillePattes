@@ -12,3 +12,9 @@
 *.autosave
 
 build-TD1-Desktop_Qt_5_10_1_MinGW_32bit-Debug/
+
+build-test_detectmotion-Desktop_Qt_5_10_0_MinGW_32bit-Debug/Makefile
+
+build-test_detectmotion-Desktop_Qt_5_10_0_MinGW_32bit-Debug/
+
+build-TD1-Desktop_Qt_5_10_0_MinGW_32bit-Debug/

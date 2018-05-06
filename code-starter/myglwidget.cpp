@@ -76,9 +76,9 @@ void MyGLWidget::initializeGL()
     m_murs.push_back(new Mur(pH, 3, 123.0f));
     m_sol = new Sol(pB, 2.0f);
 
-    // Création des balles
-    for (int i = 0 ; i < 4 ; ++i)
-        m_balles.push_back(new Balle(10.0f*(i+1), 10.0f*(i+1), 1.0f, 1.0f));
+    // Création de la balle
+
+    m_balles.push_back(new Balle(10.0f, 10.0f, 1.0f, 1.0f));
 
     // Création des briques
     for (int i = 0 ; i < m_briquesParLigne ; ++i)
