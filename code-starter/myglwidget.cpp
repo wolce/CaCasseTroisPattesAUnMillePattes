@@ -50,9 +50,6 @@ void MyGLWidget::initializeGL()
     // Reglage de la couleur de fond
     glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
 
-    // Création du palet
-    m_palet = new Palet(WIDTH/2.0f, 2.0f, 20.0f, 2.0f);
-
     // Création des murs
     float pG[4][2] = {{0.0f, 0.0f},
                       {0.0f, 125.0f},
@@ -75,6 +72,9 @@ void MyGLWidget::initializeGL()
     m_murs.push_back(new Mur(pD, 2, 98.0f));
     m_murs.push_back(new Mur(pH, 3, 123.0f));
     m_sol = new Sol(pB, 2.0f);
+
+    // Création du palet
+    m_palet = new Palet(WIDTH/2.0f, 2.0f, 20.0f, 2.0f, 2.0f, 98.0f);
 
     // Création de la balle
 

@@ -2,7 +2,7 @@
 #include <cmath>
 #include "palet.hpp"
 
-Palet::Palet(float x, float y, float largeur, float hauteur)
+Palet::Palet(float x, float y, float largeur, float hauteur, float xMin, float xMax)
 {
     m_position[0] = x;
     m_position[1] = y;
@@ -20,22 +20,29 @@ Palet::Palet(float x, float y, float largeur, float hauteur)
     m_points[3][1] = m_position[1]-m_hauteur/2.0f;
 
     m_vitesse = 2.0f;
+    m_angleMin = 25.0f;
+
+    m_xMin = xMin;
+    m_xMax = xMax;
 }
 
 void Palet::decaler(const float x, const float y)
 {
-    m_points[0][0] += x*m_vitesse;
-    m_points[1][0] += x*m_vitesse;
-    m_points[2][0] += x*m_vitesse;
-    m_points[3][0] += x*m_vitesse;
+    if (!((m_points[0][0] <= m_xMin && x < 0.0f) || (m_points[2][0] >= m_xMax && x > 0.0f)))
+    {
+        m_points[0][0] += x*m_vitesse;
+        m_points[1][0] += x*m_vitesse;
+        m_points[2][0] += x*m_vitesse;
+        m_points[3][0] += x*m_vitesse;
 
-    m_points[0][1] += y*m_vitesse;
-    m_points[1][1] += y*m_vitesse;
-    m_points[2][1] += y*m_vitesse;
-    m_points[3][1] += y*m_vitesse;
+        m_points[0][1] += y*m_vitesse;
+        m_points[1][1] += y*m_vitesse;
+        m_points[2][1] += y*m_vitesse;
+        m_points[3][1] += y*m_vitesse;
 
-    m_position[0] += x;
-    m_position[1] += y;
+        m_position[0] += x;
+        m_position[1] += y;
+    }
 }
 
 bool Palet::collision(Balle* &balle)
@@ -54,8 +61,13 @@ void Palet::traiterCollision(Balle* &balle)
 {
     float x = (balle->getCentreX() - m_points[0][0])/m_largeur; // Position relative de la balle sur le palet (0 au bord gauche et 1 au bord droit)
     x = x * 180.0f; // On ramène à une échelle [0;180]
-    x = x * M_PI/180.0f; // On met le résultat en radian
 
+    if (x < m_angleMin)
+        x = m_angleMin;
+    else if (180.0f-x > 180.0f-m_angleMin)
+        x = 180.0f-m_angleMin;
+
+    x = x * M_PI/180.0f;
     balle->setDirection(-cos(x), sin(x));
 }
 

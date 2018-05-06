@@ -7,7 +7,7 @@
 class Palet : public Bloc
 {
 public:
-    Palet(float x, float y, float largeur, float hauteur);
+    Palet(float x, float y, float largeur, float hauteur, float xMin, float xMax);
     virtual ~Palet();
     virtual void Display();
     virtual bool collision(Balle* &balle);
@@ -18,6 +18,9 @@ private:
     float m_position[2]; // Position du centre
     float m_largeur;
     float m_hauteur;
+    float m_xMin;
+    float m_xMax;
+    unsigned int m_angleMin; // L'angle maximal dont peut dévier la balle en touchant le palet
 };
 
 #endif // PALET_H
