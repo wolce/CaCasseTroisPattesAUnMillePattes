@@ -20,6 +20,7 @@ private:
     float m_hauteur;
     float m_xMin;
     float m_xMax;
+    unsigned int m_angleMin; // L'angle maximal dont peut dévier la balle en touchant le palet
 };
 
 #endif // PALET_H

@@ -20,6 +20,7 @@ Palet::Palet(float x, float y, float largeur, float hauteur, float xMin, float x
     m_points[3][1] = m_position[1]-m_hauteur/2.0f;
 
     m_vitesse = 2.0f;
+    m_angleMin = 25.0f;
 
     m_xMin = xMin;
     m_xMax = xMax;
@@ -60,8 +61,13 @@ void Palet::traiterCollision(Balle* &balle)
 {
     float x = (balle->getCentreX() - m_points[0][0])/m_largeur; // Position relative de la balle sur le palet (0 au bord gauche et 1 au bord droit)
     x = x * 180.0f; // On ramène à une échelle [0;180]
-    x = x * M_PI/180.0f; // On met le résultat en radian
 
+    if (x < m_angleMin)
+        x = m_angleMin;
+    else if (180.0f-x > 180.0f-m_angleMin)
+        x = 180.0f-m_angleMin;
+
+    x = x * M_PI/180.0f;
     balle->setDirection(-cos(x), sin(x));
 }
 
