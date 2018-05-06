@@ -2,7 +2,7 @@
 #include <cmath>
 #include "palet.hpp"
 
-Palet::Palet(float x, float y, float largeur, float hauteur)
+Palet::Palet(float x, float y, float largeur, float hauteur, float xMin, float xMax)
 {
     m_position[0] = x;
     m_position[1] = y;
@@ -20,22 +20,28 @@ Palet::Palet(float x, float y, float largeur, float hauteur)
     m_points[3][1] = m_position[1]-m_hauteur/2.0f;
 
     m_vitesse = 2.0f;
+
+    m_xMin = xMin;
+    m_xMax = xMax;
 }
 
 void Palet::decaler(const float x, const float y)
 {
-    m_points[0][0] += x*m_vitesse;
-    m_points[1][0] += x*m_vitesse;
-    m_points[2][0] += x*m_vitesse;
-    m_points[3][0] += x*m_vitesse;
+    if (!((m_points[0][0] <= m_xMin && x < 0.0f) || (m_points[2][0] >= m_xMax && x > 0.0f)))
+    {
+        m_points[0][0] += x*m_vitesse;
+        m_points[1][0] += x*m_vitesse;
+        m_points[2][0] += x*m_vitesse;
+        m_points[3][0] += x*m_vitesse;
 
-    m_points[0][1] += y*m_vitesse;
-    m_points[1][1] += y*m_vitesse;
-    m_points[2][1] += y*m_vitesse;
-    m_points[3][1] += y*m_vitesse;
+        m_points[0][1] += y*m_vitesse;
+        m_points[1][1] += y*m_vitesse;
+        m_points[2][1] += y*m_vitesse;
+        m_points[3][1] += y*m_vitesse;
 
-    m_position[0] += x;
-    m_position[1] += y;
+        m_position[0] += x;
+        m_position[1] += y;
+    }
 }
 
 bool Palet::collision(Balle* &balle)
