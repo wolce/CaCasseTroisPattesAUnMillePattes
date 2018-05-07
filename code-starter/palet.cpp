@@ -60,15 +60,11 @@ bool Palet::collision(Balle* &balle)
 void Palet::traiterCollision(Balle* &balle)
 {
     float x = (balle->getCentreX() - m_points[0][0])/m_largeur; // Position relative de la balle sur le palet (0 au bord gauche et 1 au bord droit)
-    x = x * 180.0f; // On ramène à une échelle [0;180]
 
-    if (x < m_angleMin)
-        x = m_angleMin;
-    else if (180.0f-x > 180.0f-m_angleMin)
-        x = 180.0f-m_angleMin;
+    x *= (180.0f-2*m_angleMin) + m_angleMin; // On ramène à une échelle [m_angleMin ; 180-m_angleMin]
+    x = x * M_PI/180.0f; // Passage en radian
 
-    x = x * M_PI/180.0f;
-    balle->setDirection(-cos(x), sin(x));
+    balle->setDirection(-cos(x), sin(x)); // Changement de direction de la balle
 }
 
 void Palet::Display()
