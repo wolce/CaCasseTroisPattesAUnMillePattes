@@ -15,7 +15,7 @@ else {
 }
 
 # nom de l'exe genere
-TARGET 	  = TD1
+TARGET 	  = CasseBriques
 
 # fichiers sources/headers
 SOURCES	+= main.cpp myglwidget.cpp \
