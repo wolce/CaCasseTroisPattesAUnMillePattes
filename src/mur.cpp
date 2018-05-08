@@ -1,5 +1,5 @@
 #include "mur.hpp"
-#include "myglwidget.hpp"
+#include "cassebriques.hpp"
 #include <QApplication>
 #include <QDesktopWidget>
 #include <cmath>

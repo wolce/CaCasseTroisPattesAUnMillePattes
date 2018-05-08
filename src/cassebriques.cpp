@@ -1,4 +1,4 @@
-#include "myglwidget.hpp"
+#include "cassebriques.hpp"
 #include <QApplication>
 #include <QDesktopWidget>
 #include <cmath>
@@ -21,7 +21,7 @@
 float WIDTH = 2*MAX_DIMENSION;
 float HEIGHT = 2*MAX_DIMENSION * WIN_HEIGHT / WIN_WIDTH;
 
-MyGLWidget::MyGLWidget(QWidget * parent) : QGLWidget(parent)
+CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
 {
     // Reglage de la taille/position
     setFixedSize(WIN_WIDTH, WIN_HEIGHT);
@@ -45,7 +45,7 @@ MyGLWidget::MyGLWidget(QWidget * parent) : QGLWidget(parent)
 
 
 // Fonction d'initialisation
-void MyGLWidget::initializeGL()
+void CasseBriques::initializeGL()
 {
     // Reglage de la couleur de fond
     glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
@@ -91,7 +91,7 @@ void MyGLWidget::initializeGL()
 }
 
 // Fonction de redimensionnement
-void MyGLWidget::resizeGL(int width, int height)
+void CasseBriques::resizeGL(int width, int height)
 {
     // Definition du viewport (zone d'affichage)
     glViewport(0, 0, width, height);
@@ -112,7 +112,7 @@ void MyGLWidget::resizeGL(int width, int height)
 
 
 // Fonction d'affichage
-void MyGLWidget::paintGL()
+void CasseBriques::paintGL()
 {
     // Reinitialisation du tampon de couleur
     glClear(GL_COLOR_BUFFER_BIT);
@@ -144,7 +144,7 @@ void MyGLWidget::paintGL()
 }
 
 // Fonction de gestion d'interactions clavier
-void MyGLWidget::keyPressEvent(QKeyEvent * event)
+void CasseBriques::keyPressEvent(QKeyEvent * event)
 {
     switch(event->key())
     {
@@ -175,7 +175,7 @@ void MyGLWidget::keyPressEvent(QKeyEvent * event)
     updateGL();
 }
 
- MyGLWidget::~MyGLWidget()
+ CasseBriques::~CasseBriques()
 {
     for (Mur * mur : m_murs)
         delete mur;
@@ -193,7 +193,7 @@ void MyGLWidget::keyPressEvent(QKeyEvent * event)
     delete m_palet;
 }
 
-void MyGLWidget::appliquerCollisions()
+void CasseBriques::appliquerCollisions()
 {
     // Gestion des collisions pour chaque balle
     std::vector<Balle *>::iterator itBalle=m_balles.begin();

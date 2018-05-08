@@ -1,6 +1,6 @@
 #include <QApplication>
 #include <ctime>
-#include "myglwidget.hpp"
+#include "cassebriques.hpp"
 #include "brique.hpp"
 #include "mur.hpp"
 #include "balle.hpp"
@@ -15,12 +15,9 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 	
 	// Creation du widget opengl
-    MyGLWidget glWidget;
-    glWidget.show();
+    CasseBriques casseBriques;
+    casseBriques.show();
 
     // Execution de l'application QT
     return app.exec();
-
-
-
 }
