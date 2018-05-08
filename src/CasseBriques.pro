@@ -25,7 +25,8 @@ SOURCES	+= main.cpp \
     mur.cpp \
     brique.cpp \
     sol.cpp \
-    cassebriques.cpp
+    cassebriques.cpp \
+    mainwindow.cpp
 HEADERS += \
     balle.hpp \
     palet.hpp \
@@ -33,4 +34,8 @@ HEADERS += \
     mur.hpp \
     brique.hpp \
     sol.hpp \
-    cassebriques.hpp
+    cassebriques.hpp \
+    mainwindow.hpp
+
+FORMS += \
+    mainwindow.ui

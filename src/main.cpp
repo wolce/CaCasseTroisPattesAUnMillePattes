@@ -1,6 +1,6 @@
 #include <QApplication>
 #include <ctime>
-#include "cassebriques.hpp"
+#include "mainwindow.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -11,8 +11,8 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 	
 	// Creation du widget opengl
-    CasseBriques casseBriques;
-    casseBriques.show();
+    MainWindow mainWindow;
+    mainWindow.show();
 
     // Execution de l'application QT
     return app.exec();

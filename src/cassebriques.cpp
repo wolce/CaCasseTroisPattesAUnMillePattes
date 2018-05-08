@@ -18,6 +18,9 @@ float HEIGHT = 2*MAX_DIMENSION * WIN_HEIGHT / WIN_WIDTH;
 
 CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
 {
+    // Permet à OpenGL de récupérer les évènements clavier quand il est utilisé avec Qt
+    this->setFocusPolicy(Qt::StrongFocus);
+
     // Reglage de la taille/position
     setFixedSize(WIN_WIDTH, WIN_HEIGHT);
     move(QApplication::desktop()->screen()->rect().center() - rect().center());
