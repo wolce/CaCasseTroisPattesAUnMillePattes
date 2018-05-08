@@ -1,6 +1,8 @@
 #include <vector>
 #include <cmath>
 #include "palet.hpp"
+#include "balle.hpp"
+#include "bloc.hpp"
 
 Palet::Palet(float x, float y, float largeur, float hauteur, float xMin, float xMax)
 {
@@ -40,8 +42,8 @@ void Palet::decaler(const float x, const float y)
         m_points[2][1] += y*m_vitesse;
         m_points[3][1] += y*m_vitesse;
 
-        m_position[0] += x;
-        m_position[1] += y;
+        m_position[0] += x*m_vitesse;
+        m_position[1] += y*m_vitesse;
     }
 }
 

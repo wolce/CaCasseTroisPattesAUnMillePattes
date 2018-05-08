@@ -1,8 +1,9 @@
 #ifndef PALET_H
 #define PALET_H
 
-#include <GL/glu.h>
 #include "bloc.hpp"
+
+class Balle;
 
 class Palet : public Bloc
 {
@@ -13,6 +14,11 @@ public:
     virtual bool collision(Balle* &balle);
     virtual void traiterCollision(Balle* &balle);
     void decaler(const float x, const float y); // Applique une translation au palet
+    float getCentreX() const {return m_position[0];}
+    float getCentreY() const {return m_position[1];}
+    float getHauteur() const {return m_hauteur;}
+    float getVitesse() const {return m_vitesse;}
+    float getAngleMin() const {return m_angleMin;}
 private:
     float m_vitesse;
     float m_position[2]; // Position du centre
@@ -20,7 +26,7 @@ private:
     float m_hauteur;
     float m_xMin;
     float m_xMax;
-    unsigned int m_angleMin; // L'angle maximal dont peut dévier la balle en touchant le palet
+    float m_angleMin; // L'angle maximal dont peut dévier la balle en touchant le palet
 };
 
 #endif // PALET_H

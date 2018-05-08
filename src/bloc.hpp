@@ -1,9 +1,7 @@
 #ifndef BLOC_HPP
 #define BLOC_HPP
 
-#include <GL/glu.h>
-#include <vector>
-#include "balle.hpp"
+class Balle;
 
 class Bloc
 {

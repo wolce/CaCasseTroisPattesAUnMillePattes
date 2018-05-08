@@ -53,7 +53,7 @@ private:
     std::vector<Mur *> m_murs;
     std::vector<Balle *> m_balles;
     Sol *m_sol;
-
+    bool m_balleSurPalet;
     std::vector<Brique *> m_briques;
     int m_briquesParLigne;
     int m_briquesParColonne;

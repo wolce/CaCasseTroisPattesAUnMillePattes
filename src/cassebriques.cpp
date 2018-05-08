@@ -41,6 +41,7 @@ CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
     m_espaceEntreBriquesColonne = 1.0f;
     m_largeurBrique = (WIDTH-m_espaceEntreBriquesLigne - 4.0f)/m_briquesParLigne - m_espaceEntreBriquesLigne;
     m_collision = false;
+    m_balleSurPalet = false;
 }
 
 
@@ -77,8 +78,8 @@ void CasseBriques::initializeGL()
     m_palet = new Palet(WIDTH/2.0f, 2.0f, 20.0f, 2.0f, 2.0f, 98.0f);
 
     // Création de la balle
-
-    m_balles.push_back(new Balle(10.0f, 10.0f, 1.0f, 1.0f));
+    m_balles.push_back(new Balle(m_palet));
+    m_balleSurPalet = true;
 
     // Création des briques
     for (int i = 0 ; i < m_briquesParLigne ; ++i)
@@ -140,7 +141,11 @@ void CasseBriques::paintGL()
 
     // Affichage des balles
     for(Balle * balle : m_balles)
+    {
+        if (balle->getEstSurPalet() == false)
+            balle->deplacer();
         balle->Display();
+    }
 }
 
 // Fonction de gestion d'interactions clavier
@@ -152,6 +157,11 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
         case Qt::Key_Left:
         {
             m_palet->decaler(-0.5f, 0.0f);
+            for (Balle * balle : m_balles)
+            {
+                if (balle->getEstSurPalet() == true)
+                    balle->setCentreX(m_palet->getCentreX());
+            }
             break;
         }
 
@@ -159,6 +169,31 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
         case Qt::Key_Right:
         {
             m_palet->decaler(0.5f, 0.0f);
+            for (Balle * balle : m_balles)
+            {
+                if (balle->getEstSurPalet() == true)
+                    balle->setCentreX(m_palet->getCentreX());
+            }
+            break;
+        }
+
+        case Qt::Key_Space:
+        {
+            for (Balle * balle : m_balles)
+            {
+                if (balle->getEstSurPalet() == true)
+                {
+                    balle->deplacer();
+                    balle->setEstSurPalet(false);
+                }
+            }
+            if (m_balleSurPalet == false)
+            {
+                m_balles.push_back(new Balle(m_palet));
+                m_balleSurPalet = true;
+            }
+            else
+                m_balleSurPalet = false;
             break;
         }
 
@@ -208,7 +243,7 @@ void CasseBriques::appliquerCollisions()
         else
         {
             // Collision avec le palet ?
-            if (m_palet->collision(*itBalle) == true)
+            if ((*itBalle)->getEstSurPalet() == false && m_palet->collision(*itBalle) == true)
                 m_palet->traiterCollision(*itBalle);
 
             // Collision avec un des murs ?
