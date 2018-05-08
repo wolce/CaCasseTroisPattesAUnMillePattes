@@ -45,6 +45,8 @@ protected:
     // Fonction de gestion d'interactions clavier
     void keyPressEvent(QKeyEvent * event);
 
+    void appliquerCollisions();
+
 private:
     QTimer m_timerFPS;
     Palet *m_palet;
