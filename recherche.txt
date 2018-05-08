@@ -1,2 +1,0 @@
-https://fearyourself.developpez.com/tutoriel/sdl/pong/partie-2-base-moteur/
-gerer les FPS
