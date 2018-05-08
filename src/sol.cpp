@@ -1,3 +1,4 @@
+#include "balle.hpp"
 #include "sol.hpp"
 
 Sol::Sol(float p[][2], float coord)

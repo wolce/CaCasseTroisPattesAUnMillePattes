@@ -1,10 +1,6 @@
 #include <QApplication>
 #include <ctime>
 #include "cassebriques.hpp"
-#include "brique.hpp"
-#include "mur.hpp"
-#include "balle.hpp"
-#include "palet.hpp"
 
 int main(int argc, char *argv[])
 {

@@ -1,22 +1,15 @@
 #ifndef CASSEBRIQUES_H
 #define CASSEBRIQUES_H
 
-#include "balle.hpp"
-#include "palet.hpp"
-#include "mur.hpp"
-#include <vector>
-#include "brique.hpp"
-#include "sol.hpp"
-
 #include <QGLWidget>
-#include <QKeyEvent>
-#include <QColor>
-#include <QVector2D>
-#include <QtOpenGL>
-#include <GL/glu.h>
-#include <QMouseEvent>
-#include <QWheelEvent>
 #include <QTimer>
+
+class QKeyEvent;
+class Palet;
+class Mur;
+class Balle;
+class Brique;
+class Sol;
 
 // Classe dediee a l'affichage d'une scene OpenGL
 class CasseBriques : public QGLWidget

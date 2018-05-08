@@ -2,7 +2,6 @@
 #define BALLE_H
 
 #include <GL/glu.h>
-#include "palet.hpp"
 
 class Palet;
 
@@ -22,7 +21,7 @@ public:
     bool getEstSurPalet() const {return m_estSurPalet;}
     void setEstSurPalet(bool etat) {m_estSurPalet = etat;}
     void deplacer();
-    void setCentreX(float x) {m_positionCentre[0] = x;};
+    void setCentreX(float x) {m_positionCentre[0] = x;}
 
 private:
     GLUquadric *m_sphere;

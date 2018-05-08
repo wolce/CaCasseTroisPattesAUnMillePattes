@@ -1,9 +1,9 @@
 #ifndef BRIQUE_H
 #define BRIQUE_H
 
-#include <GL/glu.h>
-#include "balle.hpp"
 #include "bloc.hpp"
+
+class Balle;
 
 class Brique : public Bloc
 {

@@ -2,7 +2,8 @@
 #define SOL_H
 
 #include "bloc.hpp"
-#include "balle.hpp"
+
+class Balle;
 
 class Sol : public Bloc
 {

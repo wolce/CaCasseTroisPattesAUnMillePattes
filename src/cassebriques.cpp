@@ -1,18 +1,13 @@
-#include "cassebriques.hpp"
 #include <QApplication>
 #include <QDesktopWidget>
-#include <cmath>
-#include <random>
-#include <QDebug>
-#include <iostream>
-
-#include "balle.hpp"
+#include <QTimer>
+#include <QKeyEvent>
 #include "mur.hpp"
-#include "palet.hpp"
-#include "bloc.hpp"
-#include "brique.hpp"
 #include "sol.hpp"
-#include <vector>
+#include "palet.hpp"
+#include "balle.hpp"
+#include "brique.hpp"
+#include "cassebriques.hpp"
 
 // Declarations des constantes
 #define WIN_WIDTH   600

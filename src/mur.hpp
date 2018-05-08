@@ -1,8 +1,9 @@
 #ifndef MUR_H
 #define MUR_H
 
-#include <GL/glu.h>
 #include "bloc.hpp"
+
+class Balle;
 
 class Mur : public Bloc
 {

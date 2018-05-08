@@ -1,11 +1,5 @@
+#include "balle.hpp"
 #include "mur.hpp"
-#include "cassebriques.hpp"
-#include <QApplication>
-#include <QDesktopWidget>
-#include <cmath>
-#include <random>
-#include <QDebug>
-#include <iostream>
 
 Mur::Mur(float p[][2], int type, float coord)
 {

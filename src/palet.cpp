@@ -1,8 +1,6 @@
-#include <vector>
-#include <cmath>
-#include "palet.hpp"
+#include <math.h>
 #include "balle.hpp"
-#include "bloc.hpp"
+#include "palet.hpp"
 
 Palet::Palet(float x, float y, float largeur, float hauteur, float xMin, float xMax)
 {

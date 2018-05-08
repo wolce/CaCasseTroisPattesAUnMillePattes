@@ -1,6 +1,8 @@
 #include <cstdlib>
 #include <math.h>
+
 #include "balle.hpp"
+#include "palet.hpp"
 
 Balle::Balle(float x, float y, float dirX, float dirY)
 {
