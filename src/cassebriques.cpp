@@ -1,4 +1,4 @@
-#include "myglwidget.hpp"
+#include "cassebriques.hpp"
 #include <QApplication>
 #include <QDesktopWidget>
 #include <cmath>
@@ -21,7 +21,7 @@
 float WIDTH = 2*MAX_DIMENSION;
 float HEIGHT = 2*MAX_DIMENSION * WIN_HEIGHT / WIN_WIDTH;
 
-MyGLWidget::MyGLWidget(QWidget * parent) : QGLWidget(parent)
+CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
 {
     // Reglage de la taille/position
     setFixedSize(WIN_WIDTH, WIN_HEIGHT);
@@ -45,7 +45,7 @@ MyGLWidget::MyGLWidget(QWidget * parent) : QGLWidget(parent)
 
 
 // Fonction d'initialisation
-void MyGLWidget::initializeGL()
+void CasseBriques::initializeGL()
 {
     // Reglage de la couleur de fond
     glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
@@ -91,7 +91,7 @@ void MyGLWidget::initializeGL()
 }
 
 // Fonction de redimensionnement
-void MyGLWidget::resizeGL(int width, int height)
+void CasseBriques::resizeGL(int width, int height)
 {
     // Definition du viewport (zone d'affichage)
     glViewport(0, 0, width, height);
@@ -112,7 +112,7 @@ void MyGLWidget::resizeGL(int width, int height)
 
 
 // Fonction d'affichage
-void MyGLWidget::paintGL()
+void CasseBriques::paintGL()
 {
     // Reinitialisation du tampon de couleur
     glClear(GL_COLOR_BUFFER_BIT);
@@ -125,6 +125,76 @@ void MyGLWidget::paintGL()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    appliquerCollisions();
+
+    // Affichage du palet
+    m_palet->Display();
+
+    // Affichage des murs
+    for(Mur * mur : m_murs)
+        mur->Display();
+
+    // Affichage des briques
+    for(Brique * brique : m_briques)
+        brique->Display();
+
+    // Affichage des balles
+    for(Balle * balle : m_balles)
+        balle->Display();
+}
+
+// Fonction de gestion d'interactions clavier
+void CasseBriques::keyPressEvent(QKeyEvent * event)
+{
+    switch(event->key())
+    {
+        // Le palet va a gauche
+        case Qt::Key_Left:
+        {
+            m_palet->decaler(-0.5f, 0.0f);
+            break;
+        }
+
+        // Le palet va a droite
+        case Qt::Key_Right:
+        {
+            m_palet->decaler(0.5f, 0.0f);
+            break;
+        }
+
+        default:
+        {
+            // Ignorer l'evenement
+            event->ignore();
+            return;
+        }
+    }
+
+    // Acceptation de l'evenement et mise a jour de la scene
+    event->accept();
+    updateGL();
+}
+
+ CasseBriques::~CasseBriques()
+{
+    for (Mur * mur : m_murs)
+        delete mur;
+    m_murs.clear();
+
+    for (Balle * balle : m_balles)
+        delete balle;
+    m_balles.clear();
+
+    for (Brique * brique : m_briques)
+        delete brique;
+    m_briques.clear();
+
+    delete m_sol;
+    delete m_palet;
+}
+
+void CasseBriques::appliquerCollisions()
+{
     // Gestion des collisions pour chaque balle
     std::vector<Balle *>::iterator itBalle=m_balles.begin();
     std::vector<Brique *>::iterator itBrique;
@@ -170,68 +240,4 @@ void MyGLWidget::paintGL()
             itBalle++;
         }
     }
-    // Affichage du palet
-    m_palet->Display();
-
-    // Affichage des murs
-    for(Mur * mur : m_murs)
-        mur->Display();
-
-    // Affichage des briques
-    for(Brique * brique : m_briques)
-        brique->Display();
-
-    // Affichage des balles
-    for(Balle * balle : m_balles)
-        balle->Display();
-}
-
-// Fonction de gestion d'interactions clavier
-void MyGLWidget::keyPressEvent(QKeyEvent * event)
-{
-    switch(event->key())
-    {
-        // Le palet va a gauche
-        case Qt::Key_Left:
-        {
-            m_palet->decaler(-0.5f, 0.0f);
-            break;
-        }
-
-        // Le palet va a droite
-        case Qt::Key_Right:
-        {
-            m_palet->decaler(0.5f, 0.0f);
-            break;
-        }
-
-        default:
-        {
-            // Ignorer l'evenement
-            event->ignore();
-            return;
-        }
-    }
-
-    // Acceptation de l'evenement et mise a jour de la scene
-    event->accept();
-    updateGL();
-}
-
- MyGLWidget::~MyGLWidget()
-{
-    for (Mur * mur : m_murs)
-        delete mur;
-    m_murs.clear();
-
-    for (Balle * balle : m_balles)
-        delete balle;
-    m_balles.clear();
-
-    for (Brique * brique : m_briques)
-        delete brique;
-    m_briques.clear();
-
-    delete m_sol;
-    delete m_palet;
 }

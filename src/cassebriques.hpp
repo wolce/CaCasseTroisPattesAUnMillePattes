@@ -1,5 +1,5 @@
-#ifndef MYGLWIDGET_H
-#define MYGLWIDGET_H
+#ifndef CASSEBRIQUES_H
+#define CASSEBRIQUES_H
 
 #include "balle.hpp"
 #include "palet.hpp"
@@ -19,17 +19,17 @@
 #include <QTimer>
 
 // Classe dediee a l'affichage d'une scene OpenGL
-class MyGLWidget : public QGLWidget
+class CasseBriques : public QGLWidget
 {
     Q_OBJECT
 
 public:
 
     // Constructeur
-    MyGLWidget(QWidget * parent = nullptr);
+    CasseBriques(QWidget * parent = nullptr);
 
     // Destructeur
-    ~MyGLWidget();
+    ~CasseBriques();
 
 protected:
 
@@ -44,6 +44,8 @@ protected:
 
     // Fonction de gestion d'interactions clavier
     void keyPressEvent(QKeyEvent * event);
+
+    void appliquerCollisions();
 
 private:
     QTimer m_timerFPS;
@@ -61,4 +63,4 @@ private:
     bool m_collision; // Indique s'il y a déjà eu une collision sur une brique dans une exécution paintGL. Permet d'éviter un double inversement de direction de la balle.
 };
 
-#endif // MYGLWIDGET_H
+#endif // CASSEBRIQUES_H

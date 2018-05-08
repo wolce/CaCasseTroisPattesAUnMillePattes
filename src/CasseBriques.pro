@@ -18,18 +18,19 @@ else {
 TARGET 	  = CasseBriques
 
 # fichiers sources/headers
-SOURCES	+= main.cpp myglwidget.cpp \
+SOURCES	+= main.cpp \
     balle.cpp \
     palet.cpp \
     bloc.cpp \
     mur.cpp \
     brique.cpp \
-    sol.cpp
+    sol.cpp \
+    cassebriques.cpp
 HEADERS += \
     balle.hpp \
     palet.hpp \
     bloc.hpp \
     mur.hpp \
-    myglwidget.hpp \
     brique.hpp \
-    sol.hpp
+    sol.hpp \
+    cassebriques.hpp
