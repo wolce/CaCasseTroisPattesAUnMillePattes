@@ -45,7 +45,6 @@ CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
     m_espaceEntreBriquesLigne = 1.0f;
     m_espaceEntreBriquesColonne = 1.0f;
     m_largeurBrique = (WIDTH-m_espaceEntreBriquesLigne - 4.0f)/m_briquesParLigne - m_espaceEntreBriquesLigne;
-    m_police = QFont("Comic Sans MS", 14);
 
     // Configuration du jeu
     m_nombreBallesInitial = 3;
@@ -56,7 +55,8 @@ CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
     // Initialisation des booléens utiles à la réalisations de certains événements
     m_collision = false;
     m_balleSurPalet = false;
-    m_jeuEnCours = true;
+    m_perdu = false;
+    m_gagne = false;
 }
 
 // Fonction d'initialisation
@@ -156,9 +156,9 @@ void CasseBriques::paintGL()
         balle->Display();
 
     // Affichage du texte
-    renderText(10.0f, 33.0f, "Balles : ", m_police);
-    renderText(220.0f, 33.0f, "Score : " + QString::number(m_score), m_police);
-    renderText(455.0f, 33.0f, "Niveau : " + QString::number(m_niveau), m_police);
+    renderText(10.0f, 33.0f, "Balles : ", QFont("Comic Sans MS", 14));
+    renderText(220.0f, 33.0f, "Score : " + QString::number(m_score), QFont("Comic Sans MS", 14));
+    renderText(455.0f, 33.0f, "Niveau : " + QString::number(m_niveau), QFont("Comic Sans MS", 14));
 
     // Affichage des balles restantes
     GLUquadric* tmp=gluNewQuadric();
@@ -170,12 +170,15 @@ void CasseBriques::paintGL()
         glPopMatrix();
     }
     gluDeleteQuadric(tmp);
+
+    if (m_perdu)
+        renderText(247.5f, 500.0f, "PERDU", QFont("Comic Sans MS", 20));
 }
 
 // Fonction de gestion d'interactions clavier
 void CasseBriques::keyPressEvent(QKeyEvent * event)
 {
-    if (m_jeuEnCours)
+    if (!m_perdu && !m_gagne)
     {
         switch(event->key())
         {
@@ -263,7 +266,7 @@ CasseBriques::~CasseBriques()
 void CasseBriques::updateGame()
 {
     testJeuEnCours();
-    if (m_jeuEnCours)
+    if (!m_gagne && !m_perdu)
     {
         for(Balle * balle : m_balles)
         {
@@ -330,10 +333,20 @@ void CasseBriques::traitementCollisions()
 
 void CasseBriques::finDuJeu()
 {
-    m_jeuEnCours = false;
     m_timerGL.stop();
     m_timerGame.stop();
-    paintGL(); // Permet d'effacer la dernière balle si l'affichage n'a pas été mis à jour (décalage entre les timers)
+    updateGL(); // Permet d'effacer la dernière balle si l'affichage n'a pas été mis à jour (décalage entre les timers)
+
+    if (m_perdu)
+    {
+        // On rentre les scores
+    }
+
+    else if (m_gagne)
+    {
+        m_niveau++;
+        initialiserJeu();
+    }
 }
 
 void CasseBriques::initialiserJeu()
@@ -357,7 +370,7 @@ void CasseBriques::initialiserJeu()
 
     initializeGL();
 
-    m_jeuEnCours = true;
+    m_gagne = false;
     m_timerGame.start();
     m_timerGL.start();
 }
@@ -365,7 +378,11 @@ void CasseBriques::initialiserJeu()
 void CasseBriques::testJeuEnCours()
 {
     if (m_nombreBalles == 0)
-        m_jeuEnCours = false;
-    else
-        m_jeuEnCours = true;
+    {
+        m_perdu = true;
+    }
+    else if (m_briques.empty())
+    {
+        m_gagne = true;
+    }
 }

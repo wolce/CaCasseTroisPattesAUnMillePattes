@@ -81,12 +81,12 @@ private:
     float m_largeurBrique;
     float m_espaceEntreBriquesLigne;
     float m_espaceEntreBriquesColonne;
-    QFont m_police;
 
     // Attributs pour la condition de certaines réalisations
     bool m_collision; // Indique s'il y a déjà eu une collision sur une brique dans une exécution paintGL. Permet d'éviter un double inversement de direction de la balle.
     bool m_balleSurPalet; // Indique si une des balles présentes en jeu est sur le palet (ie n'a pas encore été lancée)
-    bool m_jeuEnCours;
+    bool m_perdu; // Indique si le joueur a perdu
+    bool m_gagne; //Indique si le joueur a gagné
 
 };
 
