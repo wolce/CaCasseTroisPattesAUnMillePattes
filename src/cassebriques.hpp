@@ -24,9 +24,18 @@ public:
     // Destructeur
     ~CasseBriques();
 
+    // Traitement des collisions pendant une partie
+    void traitementCollisions();
+
+    // Initialisation du jeu
+    void initialiserJeu();
+
+    // Définit le déroulement d'une fin de partie
+    void finDuJeu();
+
 protected:
 
-    // Fonction d'initialisation
+    // Fonction d'initialisation de l'affichage
     void initializeGL();
 
     // Fonction de redimensionnement
@@ -38,27 +47,40 @@ protected:
     // Fonction de gestion d'interactions clavier
     void keyPressEvent(QKeyEvent * event);
 
-    void traitementCollisions();
-
 private slots:
 
+    // Mise à jour des variables du jeu (lié au timer de mise à jour du jeu : m_timerGame)
     void updateGame();
 
 private:
+
+    // Timers pour la mise à jour
     QTimer m_timerGL;
     QTimer m_timerGame;
+
+    // Eléments du jeu
     Palet *m_palet;
+    Sol *m_sol;
     std::vector<Mur *> m_murs;
     std::vector<Balle *> m_balles;
-    Sol *m_sol;
-    bool m_balleSurPalet;
     std::vector<Brique *> m_briques;
+
+    // Attributs de configuration d'une partie
+    unsigned int m_nombreBallesInitial;
+    unsigned int m_nombreBalles;
+
+    // Attributs de configuration de l'espace de jeu
     int m_briquesParLigne;
     int m_briquesParColonne;
     float m_largeurBrique;
     float m_espaceEntreBriquesLigne;
     float m_espaceEntreBriquesColonne;
+
+    // Attributs pour la condition de certaines réalisations
     bool m_collision; // Indique s'il y a déjà eu une collision sur une brique dans une exécution paintGL. Permet d'éviter un double inversement de direction de la balle.
+    bool m_balleSurPalet; // Indique si une des balles présentes en jeu est sur le palet (ie n'a pas encore été lancée)
+    bool m_jeuEnCours;
+
 };
 
 #endif // CASSEBRIQUES_H

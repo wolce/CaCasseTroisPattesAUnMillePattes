@@ -25,28 +25,35 @@ CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
     setFixedSize(WIN_WIDTH, WIN_HEIGHT);
     move(QApplication::desktop()->screen()->rect().center() - rect().center());
 
-    // Timer de rafraîchissement
+    // Timer de rafraîchissement de l'affichage
     connect(&m_timerGL,  &QTimer::timeout, [&] {
         updateGL();
     });
-
     m_timerGL.setInterval(5);
     m_timerGL.start();
 
+    // Timer de rafraîchissement du jeu
     connect(&m_timerGame, &QTimer::timeout, [&] {
         updateGame();
     });
-
     m_timerGame.setInterval(5);
     m_timerGame.start();
 
+    // Configuration de l'espace
     m_briquesParLigne = 10;
     m_briquesParColonne = 12;
     m_espaceEntreBriquesLigne = 1.0f;
     m_espaceEntreBriquesColonne = 1.0f;
     m_largeurBrique = (WIDTH-m_espaceEntreBriquesLigne - 4.0f)/m_briquesParLigne - m_espaceEntreBriquesLigne;
+
+    // Configuration du jeu
+    m_nombreBallesInitial = 3;
+    m_nombreBalles = m_nombreBallesInitial;
+
+    // Initialisation des booléens utiles à la réalisations de certains événements
     m_collision = false;
     m_balleSurPalet = false;
+    m_jeuEnCours = true;
 }
 
 
@@ -116,18 +123,18 @@ void CasseBriques::resizeGL(int width, int height)
     glLoadIdentity();
 }
 
-
 // Fonction d'affichage
 void CasseBriques::paintGL()
 {
     // Reinitialisation du tampon de couleur
     glClear(GL_COLOR_BUFFER_BIT);
 
+    // Affichage de l'espace de jeu
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(0.0, WIDTH, 0.0, HEIGHT);
 
-    // Reinitialisation de la matrice courante
+    // Affichage des éléments du jeu
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -150,66 +157,74 @@ void CasseBriques::paintGL()
 // Fonction de gestion d'interactions clavier
 void CasseBriques::keyPressEvent(QKeyEvent * event)
 {
-    switch(event->key())
+    if (m_jeuEnCours)
     {
-        // Le palet va a gauche
-        case Qt::Key_Left:
+        switch(event->key())
         {
-            m_palet->decaler(-0.5f, 0.0f);
-            for (Balle * balle : m_balles)
+            // Le palet va à gauche
+            case Qt::Key_Left:
             {
-                if (balle->getEstSurPalet() == true)
-                    balle->setCentreX(m_palet->getCentreX());
-            }
-            break;
-        }
-
-        // Le palet va a droite
-        case Qt::Key_Right:
-        {
-            m_palet->decaler(0.5f, 0.0f);
-            for (Balle * balle : m_balles)
-            {
-                if (balle->getEstSurPalet() == true)
-                    balle->setCentreX(m_palet->getCentreX());
-            }
-            break;
-        }
-
-        case Qt::Key_Space:
-        {
-            for (Balle * balle : m_balles)
-            {
-                if (balle->getEstSurPalet() == true)
+                m_palet->decaler(-0.5f, 0.0f);
+                for (Balle * balle : m_balles)
                 {
-                    balle->deplacer();
-                    balle->setEstSurPalet(false);
+                    if (balle->getEstSurPalet() == true)
+                        balle->setCentreX(m_palet->getCentreX());
                 }
+                break;
             }
-            if (m_balleSurPalet == false)
+
+            // Le palet va à droite
+            case Qt::Key_Right:
             {
-                m_balles.push_back(new Balle(m_palet));
-                m_balleSurPalet = true;
+                m_palet->decaler(0.5f, 0.0f);
+                for (Balle * balle : m_balles)
+                {
+                    if (balle->getEstSurPalet() == true)
+                        balle->setCentreX(m_palet->getCentreX());
+                }
+                break;
             }
-            else
-                m_balleSurPalet = false;
-            break;
+
+            case Qt::Key_Space:
+            {
+                for (Balle * balle : m_balles)
+                {
+                    if (balle->getEstSurPalet() == true)
+                    {
+                        balle->deplacer();
+                        balle->setEstSurPalet(false);
+                    }
+                }
+                if (m_balleSurPalet == false)
+                {
+                    m_balles.push_back(new Balle(m_palet));
+                    m_balleSurPalet = true;
+                }
+                else
+                    m_balleSurPalet = false;
+                break;
+            }
+
+            default:
+            {
+                // Ignorer l'evenement
+                event->ignore();
+                return;
+            }
         }
 
-        default:
-        {
-            // Ignorer l'evenement
-            event->ignore();
-            return;
-        }
+        // Acceptation de l'evenement et mise a jour de la scene
+        event->accept();
+        updateGL();
     }
-
-    // Acceptation de l'evenement et mise a jour de la scene
-    event->accept();
-    updateGL();
+    else
+    {
+        event->ignore();
+        return;
+    }
 }
 
- CasseBriques::~CasseBriques()
+CasseBriques::~CasseBriques()
 {
     for (Mur * mur : m_murs)
         delete mur;
@@ -229,13 +244,18 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
 
 void CasseBriques::updateGame()
 {
-    for(Balle * balle : m_balles)
+    if (m_nombreBalles > 0)
     {
-        if (balle->getEstSurPalet() == false)
-            balle->deplacer();
-    }
+        for(Balle * balle : m_balles)
+        {
+            if (balle->getEstSurPalet() == false)
+                balle->deplacer();
+        }
 
-    traitementCollisions();
+        traitementCollisions();
+    }
+    else
+        finDuJeu();
 }
 
 void CasseBriques::traitementCollisions()
@@ -249,6 +269,7 @@ void CasseBriques::traitementCollisions()
         {
             delete *itBalle;
             itBalle = m_balles.erase(itBalle);
+            m_nombreBalles--;
         }
         else
         {
@@ -285,4 +306,37 @@ void CasseBriques::traitementCollisions()
             itBalle++;
         }
     }
+}
+
+void CasseBriques::finDuJeu()
+{
+    m_jeuEnCours = false;
+    m_timerGL.stop();
+    m_timerGame.stop();
+}
+
+void CasseBriques::initialiserJeu()
+{
+    for (Mur * mur : m_murs)
+        delete mur;
+    m_murs.clear();
+
+    for (Balle * balle : m_balles)
+        delete balle;
+    m_balles.clear();
+
+    for (Brique * brique : m_briques)
+        delete brique;
+    m_briques.clear();
+
+    delete m_sol;
+    delete m_palet;
+
+    m_nombreBalles = m_nombreBallesInitial;
+
+    initializeGL();
+
+    m_jeuEnCours = true;
+    m_timerGame.start();
+    m_timerGL.start();
 }

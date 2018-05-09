@@ -37,5 +37,4 @@ HEADERS += \
     cassebriques.hpp \
     mainwindow.hpp
 
-FORMS += \
-    mainwindow.ui
+FORMS +=
