@@ -26,12 +26,19 @@ CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
     move(QApplication::desktop()->screen()->rect().center() - rect().center());
 
     // Timer de rafraîchissement
-    connect(&m_timerFPS,  &QTimer::timeout, [&] {
+    connect(&m_timerGL,  &QTimer::timeout, [&] {
         updateGL();
     });
 
-    m_timerFPS.setInterval(10);
-    m_timerFPS.start();
+    m_timerGL.setInterval(5);
+    m_timerGL.start();
+
+    connect(&m_timerGame, &QTimer::timeout, [&] {
+        updateGame();
+    });
+
+    m_timerGame.setInterval(5);
+    m_timerGame.start();
 
     m_briquesParLigne = 10;
     m_briquesParColonne = 12;
@@ -124,8 +131,6 @@ void CasseBriques::paintGL()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    appliquerCollisions();
-
     // Affichage du palet
     m_palet->Display();
 
@@ -139,11 +144,7 @@ void CasseBriques::paintGL()
 
     // Affichage des balles
     for(Balle * balle : m_balles)
-    {
-        if (balle->getEstSurPalet() == false)
-            balle->deplacer();
         balle->Display();
-    }
 }
 
 // Fonction de gestion d'interactions clavier
@@ -226,7 +227,18 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
     delete m_palet;
 }
 
-void CasseBriques::appliquerCollisions()
+void CasseBriques::updateGame()
+{
+    for(Balle * balle : m_balles)
+    {
+        if (balle->getEstSurPalet() == false)
+            balle->deplacer();
+    }
+
+    traitementCollisions();
+}
+
+void CasseBriques::traitementCollisions()
 {
     // Gestion des collisions pour chaque balle
     std::vector<Balle *>::iterator itBalle=m_balles.begin();

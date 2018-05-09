@@ -38,10 +38,15 @@ protected:
     // Fonction de gestion d'interactions clavier
     void keyPressEvent(QKeyEvent * event);
 
-    void appliquerCollisions();
+    void traitementCollisions();
+
+private slots:
+
+    void updateGame();
 
 private:
-    QTimer m_timerFPS;
+    QTimer m_timerGL;
+    QTimer m_timerGame;
     Palet *m_palet;
     std::vector<Mur *> m_murs;
     std::vector<Balle *> m_balles;
