@@ -3,6 +3,7 @@
 
 #include <QGLWidget>
 #include <QTimer>
+#include <QFont>
 
 class QKeyEvent;
 class Palet;
@@ -32,6 +33,9 @@ public:
 
     // Définit le déroulement d'une fin de partie
     void finDuJeu();
+
+    // Teste si la partie doit continuer ou non
+    void testJeuEnCours();
 
 protected:
 
@@ -68,6 +72,8 @@ private:
     // Attributs de configuration d'une partie
     unsigned int m_nombreBallesInitial;
     unsigned int m_nombreBalles;
+    double m_score;
+    int m_niveau;
 
     // Attributs de configuration de l'espace de jeu
     int m_briquesParLigne;
@@ -75,6 +81,7 @@ private:
     float m_largeurBrique;
     float m_espaceEntreBriquesLigne;
     float m_espaceEntreBriquesColonne;
+    QFont m_police;
 
     // Attributs pour la condition de certaines réalisations
     bool m_collision; // Indique s'il y a déjà eu une collision sur une brique dans une exécution paintGL. Permet d'éviter un double inversement de direction de la balle.

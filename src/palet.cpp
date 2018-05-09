@@ -19,7 +19,7 @@ Palet::Palet(float x, float y, float largeur, float hauteur, float xMin, float x
     m_points[3][0] = m_position[0]+m_largeur/2.0f;
     m_points[3][1] = m_position[1]-m_hauteur/2.0f;
 
-    m_vitesse = 2.0f;
+    m_vitesse = 4.0f;
     m_angleMin = 25.0f;
 
     m_xMin = xMin;

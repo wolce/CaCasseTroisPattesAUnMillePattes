@@ -45,17 +45,19 @@ CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
     m_espaceEntreBriquesLigne = 1.0f;
     m_espaceEntreBriquesColonne = 1.0f;
     m_largeurBrique = (WIDTH-m_espaceEntreBriquesLigne - 4.0f)/m_briquesParLigne - m_espaceEntreBriquesLigne;
+    m_police = QFont("Comic Sans MS", 14);
 
     // Configuration du jeu
     m_nombreBallesInitial = 3;
     m_nombreBalles = m_nombreBallesInitial;
+    m_score = 0;
+    m_niveau = 1;
 
     // Initialisation des booléens utiles à la réalisations de certains événements
     m_collision = false;
     m_balleSurPalet = false;
     m_jeuEnCours = true;
 }
-
 
 // Fonction d'initialisation
 void CasseBriques::initializeGL()
@@ -152,6 +154,22 @@ void CasseBriques::paintGL()
     // Affichage des balles
     for(Balle * balle : m_balles)
         balle->Display();
+
+    // Affichage du texte
+    renderText(10.0f, 33.0f, "Balles : ", m_police);
+    renderText(220.0f, 33.0f, "Score : " + QString::number(m_score), m_police);
+    renderText(455.0f, 33.0f, "Niveau : " + QString::number(m_niveau), m_police);
+
+    // Affichage des balles restantes
+    GLUquadric* tmp=gluNewQuadric();
+    for (unsigned int i = 0 ; i < m_nombreBalles ; ++i)
+    {
+        glPushMatrix();
+        glTranslatef(13.0f+(i+1)*4, 129.0f, 0.0f);
+        gluSphere(tmp, 1.0, 16, 16);
+        glPopMatrix();
+    }
+    gluDeleteQuadric(tmp);
 }
 
 // Fonction de gestion d'interactions clavier
@@ -244,7 +262,8 @@ CasseBriques::~CasseBriques()
 
 void CasseBriques::updateGame()
 {
-    if (m_nombreBalles > 0)
+    testJeuEnCours();
+    if (m_jeuEnCours)
     {
         for(Balle * balle : m_balles)
         {
@@ -270,6 +289,7 @@ void CasseBriques::traitementCollisions()
             delete *itBalle;
             itBalle = m_balles.erase(itBalle);
             m_nombreBalles--;
+            m_score -= 200;
         }
         else
         {
@@ -295,9 +315,9 @@ void CasseBriques::traitementCollisions()
                         (*itBrique)->traiterCollision(*itBalle);
                         m_collision = true;
                     }
-
                     delete *itBrique;
-                    itBrique = m_briques.erase(itBrique); // Si on supprime la brique on redéfinit l'itérateur à la position courante
+                    itBrique = m_briques.erase(itBrique); // On supprime la brique donc on redéfinit l'itérateur à la position courante
+                    m_score += 10;
                 }
                 else
                     ++itBrique; // Si la brique n'est pas supprimée on incrémente l'itérateur
@@ -313,6 +333,7 @@ void CasseBriques::finDuJeu()
     m_jeuEnCours = false;
     m_timerGL.stop();
     m_timerGame.stop();
+    paintGL(); // Permet d'effacer la dernière balle si l'affichage n'a pas été mis à jour (décalage entre les timers)
 }
 
 void CasseBriques::initialiserJeu()
@@ -339,4 +360,12 @@ void CasseBriques::initialiserJeu()
     m_jeuEnCours = true;
     m_timerGame.start();
     m_timerGL.start();
+}
+
+void CasseBriques::testJeuEnCours()
+{
+    if (m_nombreBalles == 0)
+        m_jeuEnCours = false;
+    else
+        m_jeuEnCours = true;
 }

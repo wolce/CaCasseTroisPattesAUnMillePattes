@@ -29,8 +29,8 @@ Balle::Balle(Palet *palet)
     m_sphere = gluNewQuadric();
 
     // La couleur par défaut de la balle est le bleu :
-    m_couleur[0] = 0.2f;
-    m_couleur[1] = 0.2f;
+    m_couleur[0] = 1.0f;
+    m_couleur[1] = 1.0f;
     m_couleur[2] = 1.0f;
 
     m_positionCentre[0] = palet->getCentreX();
