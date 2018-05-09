@@ -16,6 +16,7 @@ signals:
 public slots:
     void slotNouvellePartie();
     void slotQuitter();
+    void slotParametres();
 
 private:
     CasseBriques* casseBriques;

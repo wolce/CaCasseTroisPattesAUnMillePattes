@@ -78,6 +78,16 @@ void Palet::Display()
     glEnd();
 }
 
+void Palet::setLargeur(float largeur)
+{
+    m_largeur = largeur;
+
+    m_points[0][0] = m_position[0]-m_largeur/2.0f;
+    m_points[1][0] = m_position[0]-m_largeur/2.0f;
+    m_points[2][0] = m_position[0]+m_largeur/2.0f;
+    m_points[3][0] = m_position[0]+m_largeur/2.0f;
+}
+
 Palet::~Palet()
 {
 

@@ -10,7 +10,6 @@
 
 ```
 • Génération aléatoire d’un nouveau niveau avec une vitesse supérieure de la boule par rapport au niveau précédent. 
-• Choix de la taille du palet par le joueur 
 • Sauvegarde du score/nom de joueur et affichage du classement 
 ```
 
@@ -25,4 +24,5 @@ Obligatoire :
 
 Facultatif :
 • Calcul des points. 
+• Choix de la taille du palet par le joueur.
 ```

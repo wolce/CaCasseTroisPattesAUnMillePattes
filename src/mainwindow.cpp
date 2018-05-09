@@ -1,4 +1,5 @@
 #include <QMenuBar>
+#include "parametresdialog.hpp"
 #include "mainwindow.hpp"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
@@ -13,6 +14,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     QAction* actionNouvellePartie = new QAction(tr("&Nouvelle partie"));
     connect(actionNouvellePartie, SIGNAL(triggered(bool)), this, SLOT(slotNouvellePartie()));
     menuJeu->addAction(actionNouvellePartie);
+
+    QAction* actionParametres = new QAction(tr("&Paramètres"));
+    connect(actionParametres, SIGNAL(triggered(bool)), this, SLOT(slotParametres()));
+    menuJeu->addAction(actionParametres);
 
     QAction* actionQuitter = new QAction(tr("&Quitter"));
     connect(actionQuitter, SIGNAL(triggered(bool)), this, SLOT(slotQuitter()));
@@ -29,6 +34,12 @@ void MainWindow::slotNouvellePartie()
 void MainWindow::slotQuitter()
 {
     close();
+}
+
+void MainWindow::slotParametres()
+{
+    ParametresDialog dial(casseBriques, this);
+    dial.exec();
 }
 
 MainWindow::~MainWindow()

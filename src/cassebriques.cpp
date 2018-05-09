@@ -45,6 +45,7 @@ CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
     m_espaceEntreBriquesLigne = 1.0f;
     m_espaceEntreBriquesColonne = 1.0f;
     m_largeurBrique = (WIDTH-m_espaceEntreBriquesLigne - 4.0f)/m_briquesParLigne - m_espaceEntreBriquesLigne;
+    m_largeurPalet = 20.0f;
 
     // Configuration du jeu
     m_nombreBallesInitial = 3;
@@ -89,7 +90,7 @@ void CasseBriques::initializeGL()
     m_sol = new Sol(pB, 2.0f);
 
     // Création du palet
-    m_palet = new Palet(WIDTH/2.0f, 2.0f, 20.0f, 2.0f, 2.0f, 98.0f);
+    m_palet = new Palet(WIDTH/2.0f, 2.0f, m_largeurPalet, 2.5f, 2.0f, 98.0f);
 
     // Création de la balle
     m_balles.push_back(new Balle(m_palet));
@@ -385,4 +386,10 @@ void CasseBriques::testJeuEnCours()
     {
         m_gagne = true;
     }
+}
+
+void CasseBriques::setLargeurPalet(float largeur)
+{
+    m_largeurPalet = largeur;
+    m_palet->setLargeur(m_largeurPalet);
 }

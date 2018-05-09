@@ -37,6 +37,10 @@ public:
     // Teste si la partie doit continuer ou non
     void testJeuEnCours();
 
+    // Permet au joueur de choisir la taille du palet
+    void setLargeurPalet(float largeur);
+    float getLargeurPalet() const {return m_largeurPalet;}
+
 protected:
 
     // Fonction d'initialisation de l'affichage
@@ -81,6 +85,7 @@ private:
     float m_largeurBrique;
     float m_espaceEntreBriquesLigne;
     float m_espaceEntreBriquesColonne;
+    float m_largeurPalet;
 
     // Attributs pour la condition de certaines réalisations
     bool m_collision; // Indique s'il y a déjà eu une collision sur une brique dans une exécution paintGL. Permet d'éviter un double inversement de direction de la balle.

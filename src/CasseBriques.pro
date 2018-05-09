@@ -26,7 +26,8 @@ SOURCES	+= main.cpp \
     brique.cpp \
     sol.cpp \
     cassebriques.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    parametresdialog.cpp
 HEADERS += \
     balle.hpp \
     palet.hpp \
@@ -35,6 +36,8 @@ HEADERS += \
     brique.hpp \
     sol.hpp \
     cassebriques.hpp \
-    mainwindow.hpp
+    mainwindow.hpp \
+    parametresdialog.hpp
 
-FORMS +=
+FORMS += \
+    parametresdialog.ui
