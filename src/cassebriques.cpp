@@ -48,7 +48,7 @@ CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
 
     // Configuration du jeu
     m_nombreBallesInitial = 3;
-    m_nombreBalles = m_nombreBallesInitial;
+    m_nombreBallesRestantes = m_nombreBallesInitial;
     m_score = 0;
     m_niveau = 1;
 
@@ -162,7 +162,7 @@ void CasseBriques::paintGL()
 
     // Affichage des balles restantes
     GLUquadric* tmp=gluNewQuadric();
-    for (unsigned int i = 0 ; i < m_nombreBalles ; ++i)
+    for (unsigned int i = 0 ; i < m_nombreBallesRestantes ; ++i)
     {
         glPushMatrix();
         glTranslatef(13.0f+(i+1)*4, 129.0f, 0.0f);
@@ -214,9 +214,10 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
                     {
                         balle->deplacer();
                         balle->setEstSurPalet(false);
+                        m_nombreBallesRestantes--;
                     }
                 }
-                if (m_balleSurPalet == false)
+                if (m_balleSurPalet == false && m_nombreBallesRestantes > 0)
                 {
                     m_balles.push_back(new Balle(m_palet));
                     m_balleSurPalet = true;
@@ -291,7 +292,6 @@ void CasseBriques::traitementCollisions()
         {
             delete *itBalle;
             itBalle = m_balles.erase(itBalle);
-            m_nombreBalles--;
             m_score -= 200;
         }
         else
@@ -366,7 +366,7 @@ void CasseBriques::initialiserJeu()
     delete m_sol;
     delete m_palet;
 
-    m_nombreBalles = m_nombreBallesInitial;
+    m_nombreBallesRestantes = m_nombreBallesInitial;
 
     initializeGL();
 
@@ -377,7 +377,7 @@ void CasseBriques::initialiserJeu()
 
 void CasseBriques::testJeuEnCours()
 {
-    if (m_nombreBalles == 0)
+    if (m_balles.empty())
     {
         m_perdu = true;
     }

@@ -71,7 +71,7 @@ private:
 
     // Attributs de configuration d'une partie
     unsigned int m_nombreBallesInitial;
-    unsigned int m_nombreBalles;
+    unsigned int m_nombreBallesRestantes;
     double m_score;
     int m_niveau;
 
