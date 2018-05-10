@@ -41,6 +41,8 @@ public:
     void setLargeurPalet(float largeur);
     float getLargeurPalet() const {return m_largeurPalet;}
 
+    void chargerNiveau();
+
 protected:
 
     // Fonction d'initialisation de l'affichage

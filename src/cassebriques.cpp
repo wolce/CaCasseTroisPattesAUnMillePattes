@@ -2,12 +2,15 @@
 #include <QDesktopWidget>
 #include <QTimer>
 #include <QKeyEvent>
+#include <fstream>
 #include "mur.hpp"
 #include "sol.hpp"
 #include "palet.hpp"
 #include "balle.hpp"
 #include "brique.hpp"
 #include "cassebriques.hpp"
+
+#include <iostream>
 
 // Declarations des constantes
 #define WIN_WIDTH   600
@@ -40,11 +43,8 @@ CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
     m_timerGame.start();
 
     // Configuration de l'espace
-    m_briquesParLigne = 10;
-    m_briquesParColonne = 12;
     m_espaceEntreBriquesLigne = 1.0f;
     m_espaceEntreBriquesColonne = 1.0f;
-    m_largeurBrique = (WIDTH-m_espaceEntreBriquesLigne - 4.0f)/m_briquesParLigne - m_espaceEntreBriquesLigne;
     m_largeurPalet = 20.0f;
 
     // Configuration du jeu
@@ -96,14 +96,8 @@ void CasseBriques::initializeGL()
     m_balles.push_back(new Balle(m_palet));
     m_balleSurPalet = true;
 
-    // Création des briques
-    for (int i = 0 ; i < m_briquesParLigne ; ++i)
-    {
-        for (int j = 0 ; j < m_briquesParColonne ; ++j)
-        {
-            m_briques.push_back(new Brique((i+1)*m_espaceEntreBriquesLigne + 2.0f + i*m_largeurBrique, 123.0f-(j+1)*m_espaceEntreBriquesColonne - j*m_largeurBrique/3.0f, m_largeurBrique));
-        }
-    }
+    // On dessine les briques (chargement du niveau)
+    chargerNiveau();
 }
 
 // Fonction de redimensionnement
@@ -392,4 +386,57 @@ void CasseBriques::setLargeurPalet(float largeur)
 {
     m_largeurPalet = largeur;
     m_palet->setLargeur(m_largeurPalet);
+}
+
+void CasseBriques::chargerNiveau()
+{
+    std::ifstream fichier("niveaux.txt");
+
+    std::string ligne;
+    char a;
+    int nombreNiveaux = 0;
+    int choixNiveau;
+    int i = 0;
+
+    if(fichier) // Si l'ouverture du fichier s'est bien déroulée, alors on peut effectuer le traitement suivant
+    {
+        while (std::getline(fichier, ligne))
+        {
+            if (ligne == "*")
+                nombreNiveaux++;
+        }
+
+        fichier.clear();
+        fichier.seekg(0, std::ios::beg);
+
+        choixNiveau = rand()%(nombreNiveaux)+1;
+
+        while(i < choixNiveau)
+        {
+            std::getline(fichier, ligne);
+            if (ligne == "*")
+                ++i;
+        }
+        std::cout << nombreNiveaux << std::endl;
+        std::cout << choixNiveau << std::endl;
+
+        fichier >> m_briquesParLigne;
+        fichier >> m_briquesParColonne;
+        fichier.get(a);
+
+        m_largeurBrique = (WIDTH-m_espaceEntreBriquesLigne - 4.0f)/m_briquesParLigne - m_espaceEntreBriquesLigne;
+
+        for (int i = 0 ; i < m_briquesParLigne ; ++i)
+        {
+            for (int j = 0 ; j < m_briquesParColonne ; ++j)
+            {
+                fichier.get(a);
+                if (a == '1')
+                {
+                    m_briques.push_back(new Brique((i+1)*m_espaceEntreBriquesLigne + 2.0f + i*m_largeurBrique, 123.0f-(j+1)*m_espaceEntreBriquesColonne - j*m_largeurBrique/3.0f, m_largeurBrique));
+                }
+            }
+            fichier.get(a);
+        }
+    }
 }
