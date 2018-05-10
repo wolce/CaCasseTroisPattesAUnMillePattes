@@ -9,7 +9,7 @@ class Balle
 {
 public:
     Balle(float x, float y, float dirX, float dirY);
-    Balle(Palet *palet);
+    Balle(Palet *palet, int niveau);
     ~Balle();
     void Display();
     void setDirection(const float x, const float y) {m_direction[0]=x;m_direction[1]=y;}

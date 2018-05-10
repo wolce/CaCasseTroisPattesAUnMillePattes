@@ -93,7 +93,7 @@ void CasseBriques::initializeGL()
     m_palet = new Palet(WIDTH/2.0f, 2.0f, m_largeurPalet, 2.5f, 2.0f, 98.0f);
 
     // Création de la balle
-    m_balles.push_back(new Balle(m_palet));
+    m_balles.push_back(new Balle(m_palet, m_niveau));
     m_balleSurPalet = true;
 
     // On dessine les briques (chargement du niveau)
@@ -214,7 +214,7 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
                 }
                 if (m_balleSurPalet == false && m_nombreBallesRestantes > 0)
                 {
-                    m_balles.push_back(new Balle(m_palet));
+                    m_balles.push_back(new Balle(m_palet, m_niveau));
                     m_balleSurPalet = true;
                 }
                 else
@@ -372,7 +372,7 @@ void CasseBriques::initialiserJeu()
 
 void CasseBriques::testJeuEnCours()
 {
-    if (m_balles.empty())
+    if (m_balles.empty() && m_nombreBallesRestantes == 0)
     {
         m_perdu = true;
     }

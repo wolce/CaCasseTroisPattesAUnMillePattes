@@ -9,7 +9,6 @@
 ## A faire (bonus)
 
 ```
-• Génération aléatoire d’un nouveau niveau avec une vitesse supérieure de la boule par rapport au niveau précédent. 
 • Sauvegarde du score/nom de joueur et affichage du classement 
 ```
 
@@ -23,6 +22,7 @@ Obligatoire :
 • Décompte des boules utilisées et contrôle de la fin de partie. 
 
 Facultatif :
+• Génération aléatoire d’un nouveau niveau avec une vitesse supérieure de la boule par rapport au niveau précédent. 
 • Calcul des points. 
 • Choix de la taille du palet par le joueur.
 ```
