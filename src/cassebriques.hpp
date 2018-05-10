@@ -54,8 +54,9 @@ protected:
     // Fonction d'affichage
     void paintGL();
 
-    // Fonction de gestion d'interactions clavier
+    // Fonctions de gestion d'interactions
     void keyPressEvent(QKeyEvent * event);
+    void mouseMoveEvent(QMouseEvent *event);
 
 private slots:
 

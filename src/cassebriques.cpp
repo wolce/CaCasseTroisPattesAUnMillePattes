@@ -24,6 +24,9 @@ CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
     // Permet à OpenGL de récupérer les évènements clavier quand il est utilisé avec Qt
     this->setFocusPolicy(Qt::StrongFocus);
 
+    //Autorise les événements souris
+    this->setMouseTracking(true);
+
     // Reglage de la taille/position
     setFixedSize(WIN_WIDTH, WIN_HEIGHT);
     move(QApplication::desktop()->screen()->rect().center() - rect().center());
@@ -390,7 +393,7 @@ void CasseBriques::setLargeurPalet(float largeur)
 
 void CasseBriques::chargerNiveau()
 {
-    std::ifstream fichier("niveaux.txt");
+    std::ifstream fichier("debug/niveaux.txt");
 
     std::string ligne;
     char a;
@@ -426,17 +429,42 @@ void CasseBriques::chargerNiveau()
 
         m_largeurBrique = (WIDTH-m_espaceEntreBriquesLigne - 4.0f)/m_briquesParLigne - m_espaceEntreBriquesLigne;
 
-        for (int i = 0 ; i < m_briquesParLigne ; ++i)
+        for (int i = 0 ; i < m_briquesParColonne ; ++i)
         {
-            for (int j = 0 ; j < m_briquesParColonne ; ++j)
+            for (int j = 0 ; j < m_briquesParLigne ; ++j)
             {
                 fichier.get(a);
                 if (a == '1')
                 {
-                    m_briques.push_back(new Brique((i+1)*m_espaceEntreBriquesLigne + 2.0f + i*m_largeurBrique, 123.0f-(j+1)*m_espaceEntreBriquesColonne - j*m_largeurBrique/3.0f, m_largeurBrique));
+                    m_briques.push_back(new Brique((j+1)*m_espaceEntreBriquesLigne + 2.0f + j*m_largeurBrique, 123.0f-(i+1)*m_espaceEntreBriquesColonne - i*m_largeurBrique/3.0f, m_largeurBrique));
                 }
             }
             fichier.get(a);
         }
     }
+}
+
+void CasseBriques::mouseMoveEvent(QMouseEvent *event)
+{
+    std::cout << event->pos().x() << std::endl;
+
+    if (event->pos().x()-m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH > 2.0f*WIN_WIDTH/(float)WIDTH && event->pos().x()+m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH < WIN_WIDTH - 2.0f*WIN_WIDTH/(float)WIDTH)
+    {
+        m_palet->setCentreX(event->pos().x()*WIDTH/(float)WIN_WIDTH);
+        std::cout << event->pos().x() << std::endl;
+    }
+    else
+    {
+        if (event->pos().x()-m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH >= 2.0f*WIN_WIDTH/(float)WIDTH)
+            m_palet->setCentreX(98.0f-m_largeurPalet/2.0f);
+        else
+            m_palet->setCentreX(2.0f+m_largeurPalet/2.0f);
+    }
+    for (Balle * balle : m_balles)
+    {
+        if (balle->getEstSurPalet() == true)
+            balle->setCentreX(m_palet->getCentreX());
+    }
+    event->accept();
+    updateGL();
 }

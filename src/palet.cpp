@@ -26,6 +26,15 @@ Palet::Palet(float x, float y, float largeur, float hauteur, float xMin, float x
     m_xMax = xMax;
 }
 
+void Palet::setCentreX(float positionCentreX)
+{
+    m_position[0] = positionCentreX;
+    m_points[0][0] = m_position[0]-m_largeur/2.0f;
+    m_points[1][0] = m_position[0]-m_largeur/2.0f;
+    m_points[2][0] = m_position[0]+m_largeur/2.0f;
+    m_points[3][0] = m_position[0]+m_largeur/2.0f;
+}
+
 void Palet::decaler(const float x, const float y)
 {
     if (!((m_points[0][0] <= m_xMin && x < 0.0f) || (m_points[2][0] >= m_xMax && x > 0.0f)))
