@@ -2,20 +2,24 @@
 #include <cstdio>
 #include <QObject>
 #include "camera.hpp"
+#include "cassebriques.hpp"
 
 using namespace cv;
 using namespace std;
 
-Camera::Camera()
+Camera::Camera(CasseBriques* casseBriques)
 {
+    m_casseBriques = casseBriques;
     m_active = false;
+    m_translation = 0.0f;
     setFixedSize(320,240);
+
     initialiserCamera();
 
     QObject::connect(&m_timerCam,  &QTimer::timeout, [&] {
         capturerImage();
     });
-    m_timerCam.setInterval(50);
+    m_timerCam.setInterval(70);
 }
 
 Camera::~Camera() {}
@@ -91,7 +95,19 @@ void Camera::capturerImage()
 
         setPixmap(QPixmap::fromImage(QImage(frame2.data, frame2.cols, frame2.rows,frame2.step, QImage::Format_RGB888)));
         setScaledContents(true);
-        //ui->openGLWidget->setVect(vect_);
+
+        if (m_buffer.size() > 20)
+        {
+            m_translation += vect.x;
+            m_buffer.push(vect.x);
+            m_translation -= m_buffer.front();
+            m_buffer.pop();
+        }
+        else
+        {
+            m_translation += vect.x;
+            m_buffer.push(vect.x);
+        }
     }
 }
 

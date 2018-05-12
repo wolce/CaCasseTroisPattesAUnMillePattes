@@ -9,6 +9,7 @@
 #include "balle.hpp"
 #include "brique.hpp"
 #include "cassebriques.hpp"
+#include "camera.hpp"
 
 #include <iostream>
 
@@ -19,10 +20,12 @@
 float WIDTH = 2*MAX_DIMENSION;
 float HEIGHT = 2*MAX_DIMENSION * WIN_HEIGHT / WIN_WIDTH;
 
-CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
+CasseBriques::CasseBriques(Camera *camera, QWidget * parent) : QGLWidget(parent)
 {
     // Permet à OpenGL de récupérer les évènements clavier quand il est utilisé avec Qt
     this->setFocusPolicy(Qt::StrongFocus);
+
+    m_camera = camera;
 
     //Autorise les événements souris
     this->setMouseTracking(true);
@@ -272,6 +275,10 @@ void CasseBriques::updateGame()
             if (balle->getEstSurPalet() == false)
                 balle->deplacer();
         }
+
+        if (m_camera->getActive() == true)
+            m_palet->decaler(m_camera->getTranslation()/50.0f, 0.0f);
+        std::cout << m_camera->getTranslation() << std::endl;
 
         traitementCollisions();
     }

@@ -11,6 +11,7 @@ class Mur;
 class Balle;
 class Brique;
 class Sol;
+class Camera;
 
 // Classe dediee a l'affichage d'une scene OpenGL
 class CasseBriques : public QGLWidget
@@ -20,7 +21,7 @@ class CasseBriques : public QGLWidget
 public:
 
     // Constructeur
-    CasseBriques(QWidget * parent = nullptr);
+    CasseBriques(Camera* camera, QWidget * parent = nullptr);
 
     // Destructeur
     ~CasseBriques();
@@ -66,6 +67,9 @@ private slots:
     void updateGame();
 
 private:
+
+    // Caméra
+    Camera* m_camera;
 
     // Timers pour la mise à jour
     QTimer m_timerGL;

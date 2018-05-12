@@ -8,8 +8,8 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
-    m_casseBriques = new CasseBriques(this);
-    m_camera = new Camera();
+    m_camera = new Camera(m_casseBriques);
+    m_casseBriques = new CasseBriques(m_camera, this);
 
     m_layoutCentral = new QHBoxLayout();
     m_layoutCentral->addWidget(m_casseBriques);
