@@ -14,6 +14,14 @@ else {
 	LIBS     += -lGL -lGLU
 }
 
+INCLUDEPATH += $$(OPENCV_DIR)\..\..\include
+LIBS += -L$$(OPENCV_DIR)\lib \
+    -lopencv_core2413 \
+    -lopencv_highgui2413 \
+    -lopencv_imgproc2413 \
+    -lopencv_features2d2413 \
+    -lopencv_calib3d2413
+
 # nom de l'exe genere
 TARGET 	  = CasseBriques
 
@@ -27,7 +35,8 @@ SOURCES	+= main.cpp \
     sol.cpp \
     cassebriques.cpp \
     mainwindow.cpp \
-    parametresdialog.cpp
+    parametresdialog.cpp \
+    camera.cpp
 HEADERS += \
     balle.hpp \
     palet.hpp \
@@ -37,7 +46,8 @@ HEADERS += \
     sol.hpp \
     cassebriques.hpp \
     mainwindow.hpp \
-    parametresdialog.hpp
+    parametresdialog.hpp \
+    camera.hpp
 
 FORMS += \
     parametresdialog.ui

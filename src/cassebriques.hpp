@@ -43,6 +43,8 @@ public:
 
     void chargerNiveau();
 
+    void nouvellePartie();
+
 protected:
 
     // Fonction d'initialisation de l'affichage

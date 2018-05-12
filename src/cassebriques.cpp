@@ -420,8 +420,6 @@ void CasseBriques::chargerNiveau()
             if (ligne == "*")
                 ++i;
         }
-        std::cout << nombreNiveaux << std::endl;
-        std::cout << choixNiveau << std::endl;
 
         fichier >> m_briquesParLigne;
         fichier >> m_briquesParColonne;
@@ -446,16 +444,13 @@ void CasseBriques::chargerNiveau()
 
 void CasseBriques::mouseMoveEvent(QMouseEvent *event)
 {
-    std::cout << event->pos().x() << std::endl;
-
     if (event->pos().x()-m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH > 2.0f*WIN_WIDTH/(float)WIDTH && event->pos().x()+m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH < WIN_WIDTH - 2.0f*WIN_WIDTH/(float)WIDTH)
     {
         m_palet->setCentreX(event->pos().x()*WIDTH/(float)WIN_WIDTH);
-        std::cout << event->pos().x() << std::endl;
     }
     else
     {
-        if (event->pos().x()-m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH >= 2.0f*WIN_WIDTH/(float)WIDTH)
+        if (event->pos().x()-m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH > 2.0f*WIN_WIDTH/(float)WIDTH)
             m_palet->setCentreX(98.0f-m_largeurPalet/2.0f);
         else
             m_palet->setCentreX(2.0f+m_largeurPalet/2.0f);
@@ -467,4 +462,11 @@ void CasseBriques::mouseMoveEvent(QMouseEvent *event)
     }
     event->accept();
     updateGL();
+}
+
+void CasseBriques::nouvellePartie()
+{
+    m_niveau = 1;
+    m_score = 0;
+    initialiserJeu();
 }

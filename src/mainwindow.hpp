@@ -2,7 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "cassebriques.hpp"
+
+class Camera;
+class CasseBriques;
+class QHBoxLayout;
 
 class MainWindow : public QMainWindow
 {
@@ -14,12 +17,18 @@ public:
 signals:
 
 public slots:
+    void updateWidgetCentral();
+
+private slots:
     void slotNouvellePartie();
     void slotQuitter();
     void slotParametres();
 
 private:
-    CasseBriques* casseBriques;
+    CasseBriques* m_casseBriques;
+    Camera* m_camera;
+    QHBoxLayout* m_layoutCentral;
+    QWidget* m_widgetCentral;
 };
 
 #endif // MAINWINDOW_H
