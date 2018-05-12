@@ -18,7 +18,7 @@ public:
     void start();
     void capturerImage();
     bool getActive() const {return m_active;}
-    void setActive(const bool active) {m_active = active;}
+    void setActive(const bool active);
 
 private:
     bool m_active;

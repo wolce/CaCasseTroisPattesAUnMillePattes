@@ -16,7 +16,6 @@ Camera::Camera()
         capturerImage();
     });
     m_timerCam.setInterval(50);
-    m_timerCam.start();
 }
 
 Camera::~Camera() {}
@@ -43,8 +42,6 @@ void Camera::initialiserCamera()
         cerr<<"Error openning the default camera"<<endl;
     }
 
-
-
     // Get frame1
     cap >> frame1;
     // Mirror effect
@@ -62,37 +59,40 @@ void Camera::initialiserCamera()
 
 void Camera::capturerImage()
 {
-    // Get frame2
-    cap >> frame2;
-    // Mirror effect
-    cv::flip(frame2,frame2,1);
-    // Extract working rect in frame2 and convert to gray
-    cv::cvtColor(cv::Mat(frame2,workingRect),frameRect2,COLOR_BGR2GRAY);
+    if (m_active)
+    {
+        // Get frame2
+        cap >> frame2;
+        // Mirror effect
+        cv::flip(frame2,frame2,1);
+        // Extract working rect in frame2 and convert to gray
+        cv::cvtColor(cv::Mat(frame2,workingRect),frameRect2,COLOR_BGR2GRAY);
 
-    // Extract template image in frame1
-    cv::Mat templateImage(frameRect1,templateRect);
-    // Do the Matching between the working rect in frame2 and the templateImage in frame1
-    matchTemplate( frameRect2, templateImage, resultImage, TM_CCORR_NORMED );
-    // Localize the best match with minMaxLoc
-    double minVal; double maxVal; Point minLoc; Point maxLoc;
-    minMaxLoc( resultImage, &minVal, &maxVal, &minLoc, &maxLoc);
-    // Compute the translation vector between the origin and the matching rect
-    Point vect(maxLoc.x-templateRect.x,maxLoc.y-templateRect.y);
+        // Extract template image in frame1
+        cv::Mat templateImage(frameRect1,templateRect);
+        // Do the Matching between the working rect in frame2 and the templateImage in frame1
+        matchTemplate( frameRect2, templateImage, resultImage, TM_CCORR_NORMED );
+        // Localize the best match with minMaxLoc
+        double minVal; double maxVal; Point minLoc; Point maxLoc;
+        minMaxLoc( resultImage, &minVal, &maxVal, &minLoc, &maxLoc);
+        // Compute the translation vector between the origin and the matching rect
+        Point vect(maxLoc.x-templateRect.x,maxLoc.y-templateRect.y);
 
-    // Draw green rectangle and the translation vector
-    rectangle(frame2,workingRect,Scalar( 0, 255, 0),2);
-    Point p(workingCenter.x+vect.x,workingCenter.y+vect.y);
-    arrowedLine(frame2,workingCenter,p,Scalar(255,255,255),2);
+        // Draw green rectangle and the translation vector
+        rectangle(frame2,workingRect,Scalar( 0, 255, 0),2);
+        Point p(workingCenter.x+vect.x,workingCenter.y+vect.y);
+        arrowedLine(frame2,workingCenter,p,Scalar(255,255,255),2);
 
-    // Display frame2
-    //imshow("WebCam", frame2);
+        // Display frame2
+        //imshow("WebCam", frame2);
 
-    // Swap matrixes
-    swap(frameRect1,frameRect2);
+        // Swap matrixes
+        swap(frameRect1,frameRect2);
 
-    setPixmap(QPixmap::fromImage(QImage(frame2.data, frame2.cols, frame2.rows,frame2.step, QImage::Format_RGB888)));
-    setScaledContents(true);
-    //ui->openGLWidget->setVect(vect_);
+        setPixmap(QPixmap::fromImage(QImage(frame2.data, frame2.cols, frame2.rows,frame2.step, QImage::Format_RGB888)));
+        setScaledContents(true);
+        //ui->openGLWidget->setVect(vect_);
+    }
 }
 
 void Camera::stop()
@@ -103,4 +103,13 @@ void Camera::stop()
 void Camera::start()
 {
     m_timerCam.start();
+}
+
+void Camera::setActive(const bool active)
+{
+    m_active = active;
+    if (m_active == true)
+        start();
+    else
+        stop();
 }
