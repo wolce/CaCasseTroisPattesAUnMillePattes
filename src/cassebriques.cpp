@@ -186,24 +186,14 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
             // Le palet va à gauche
             case Qt::Key_Left:
             {
-                m_palet->decaler(-0.5f, 0.0f);
-                for (Balle * balle : m_balles)
-                {
-                    if (balle->getEstSurPalet() == true)
-                        balle->setCentreX(m_palet->getCentreX());
-                }
+                deplacerPalet(m_palet->getCentreX()-1.0f);
                 break;
             }
 
             // Le palet va à droite
             case Qt::Key_Right:
             {
-                m_palet->decaler(0.5f, 0.0f);
-                for (Balle * balle : m_balles)
-                {
-                    if (balle->getEstSurPalet() == true)
-                        balle->setCentreX(m_palet->getCentreX());
-                }
+                deplacerPalet(m_palet->getCentreX()+1.0f);
                 break;
             }
 
@@ -277,8 +267,7 @@ void CasseBriques::updateGame()
         }
 
         if (m_camera->getActive() == true)
-            m_palet->decaler(m_camera->getTranslation()/50.0f, 0.0f);
-        std::cout << m_camera->getTranslation() << std::endl;
+            deplacerPalet(m_palet->getCentreX()+m_camera->getTranslation()/50.0f);
 
         traitementCollisions();
     }
@@ -453,20 +442,16 @@ void CasseBriques::mouseMoveEvent(QMouseEvent *event)
 {
     if (event->pos().x()-m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH > 2.0f*WIN_WIDTH/(float)WIDTH && event->pos().x()+m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH < WIN_WIDTH - 2.0f*WIN_WIDTH/(float)WIDTH)
     {
-        m_palet->setCentreX(event->pos().x()*WIDTH/(float)WIN_WIDTH);
+        deplacerPalet(event->pos().x()*WIDTH/(float)WIN_WIDTH);
     }
     else
     {
         if (event->pos().x()-m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH > 2.0f*WIN_WIDTH/(float)WIDTH)
-            m_palet->setCentreX(98.0f-m_largeurPalet/2.0f);
+            deplacerPalet(98.0f-m_largeurPalet/2.0f);
         else
-            m_palet->setCentreX(2.0f+m_largeurPalet/2.0f);
+            deplacerPalet(2.0f+m_largeurPalet/2.0f);
     }
-    for (Balle * balle : m_balles)
-    {
-        if (balle->getEstSurPalet() == true)
-            balle->setCentreX(m_palet->getCentreX());
-    }
+
     event->accept();
     updateGL();
 }
@@ -475,5 +460,17 @@ void CasseBriques::nouvellePartie()
 {
     m_niveau = 1;
     m_score = 0;
+    m_perdu = false;
+    m_gagne = false;
     initialiserJeu();
+}
+
+void CasseBriques::deplacerPalet(float x)
+{
+    m_palet->setCentreX(x);
+    for (Balle * balle : m_balles)
+    {
+        if (balle->getEstSurPalet() == true)
+            balle->setCentreX(m_palet->getCentreX());
+    }
 }

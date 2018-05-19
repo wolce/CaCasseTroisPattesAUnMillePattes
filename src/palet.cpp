@@ -70,7 +70,7 @@ void Palet::traiterCollision(Balle* &balle)
 {
     float x = (balle->getCentreX() - m_points[0][0])/m_largeur; // Position relative de la balle sur le palet (0 au bord gauche et 1 au bord droit)
 
-    x *= (180.0f-2*m_angleMin) + m_angleMin; // On ramène à une échelle [m_angleMin ; 180-m_angleMin]
+    x = x * (180.0f-2*m_angleMin) + m_angleMin; // On ramène à une échelle [m_angleMin ; 180-m_angleMin]
     x = x * M_PI/180.0f; // Passage en radian
 
     balle->setDirection(-cos(x), sin(x)); // Changement de direction de la balle

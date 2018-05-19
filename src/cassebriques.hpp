@@ -46,6 +46,8 @@ public:
 
     void nouvellePartie();
 
+    void deplacerPalet(float x);
+
 protected:
 
     // Fonction d'initialisation de l'affichage
