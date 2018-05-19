@@ -38,14 +38,14 @@ CasseBriques::CasseBriques(Camera *camera, QWidget * parent) : QGLWidget(parent)
     connect(&m_timerGL,  &QTimer::timeout, [&] {
         updateGL();
     });
-    m_timerGL.setInterval(5);
+    m_timerGL.setInterval(3);
     m_timerGL.start();
 
     // Timer pour le module de jeu
     connect(&m_timerGame, &QTimer::timeout, [&] {
         updateGame();
     });
-    m_timerGame.setInterval(5);
+    m_timerGame.setInterval(3);
     m_timerGame.start();
 
     // Configuration de l'espace

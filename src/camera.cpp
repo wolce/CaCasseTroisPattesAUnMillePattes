@@ -37,8 +37,6 @@ void Camera::initialiserCamera()
     workingCenter = Point(workingRect.x+subImageWidth/2,workingRect.y+subImageHeight/2);
 
     cap = cv::VideoCapture(0); // open the default camera
-    cout<<"width :"<<cap.get(CV_CAP_PROP_FRAME_WIDTH)<<endl;
-    cout<<"height :"<<cap.get(CV_CAP_PROP_FRAME_HEIGHT)<<endl;
     cap.set(CV_CAP_PROP_FRAME_WIDTH,frameWidth);
     cap.set(CV_CAP_PROP_FRAME_HEIGHT,frameHeight);
     if(!cap.isOpened())  // check if we succeeded

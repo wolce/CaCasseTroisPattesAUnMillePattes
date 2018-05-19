@@ -20,7 +20,7 @@ Balle::Balle(float x, float y, float dirX, float dirY)
     m_direction[0] = dirX;
     m_direction[1] = dirY;
 
-    m_vitesse = 0.2f;
+    m_vitesse = 0.05f;
 }
 
 Balle::Balle(Palet *palet, int niveau)
