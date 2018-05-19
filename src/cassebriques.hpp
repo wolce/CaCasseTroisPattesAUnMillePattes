@@ -20,32 +20,32 @@ class CasseBriques : public QGLWidget
 
 public:
 
-    // Constructeur
-    CasseBriques(Camera* camera, QWidget * parent = nullptr);
+    /******************************/
+    /* Constructeur & Destructeur */
+    /******************************/
 
-    // Destructeur
+    CasseBriques(Camera* camera, QWidget * parent = nullptr);
     ~CasseBriques();
 
-    // Traitement des collisions pendant une partie
-    void traitementCollisions();
+    /***************/
+    /* Etat du jeu */
+    /***************/
 
     // Initialisation du jeu
     void initialiserJeu();
 
-    // Définit le déroulement d'une fin de partie
-    void finDuJeu();
+    // Stoppe la partie
+    void stopJeu();
 
-    // Teste si la partie doit continuer ou non
-    void testJeuEnCours();
-
-    // Permet au joueur de choisir la taille du palet
-    void setLargeurPalet(float largeur);
-    float getLargeurPalet() const {return m_largeurPalet;}
-
-    void chargerNiveau();
-
+    // Recommencer une partie depuis le début
     void nouvellePartie();
 
+    /************************/
+    /* Actions sur le palet */
+    /************************/
+
+    void setLargeurPalet(float largeur);
+    float getLargeurPalet() const {return m_largeurPalet;}
     void deplacerPalet(float x);
 
 protected:
@@ -59,7 +59,7 @@ protected:
     // Fonction d'affichage
     void paintGL();
 
-    // Fonctions de gestion d'interactions
+    // Fonctions de gestion des interactions
     void keyPressEvent(QKeyEvent * event);
     void mouseMoveEvent(QMouseEvent *event);
 
@@ -69,6 +69,23 @@ private slots:
     void updateGame();
 
 private:
+
+    /************/
+    /* Méthodes */
+    /************/
+
+    // Charger une configuration de briques à partir d'un fichier
+    void chargerNiveau();
+
+    // Traitement des collisions pendant une partie
+    void traitementCollisions();
+
+    // Teste si la partie doit continuer ou non
+    void testJeuEnCours();
+
+    /*************/
+    /* Attributs */
+    /*************/
 
     // Caméra
     Camera* m_camera;

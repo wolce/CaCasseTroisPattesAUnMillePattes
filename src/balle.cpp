@@ -59,8 +59,17 @@ void Balle::Display()
 
 void Balle::deplacer()
 {
-    m_positionCentre[0] += m_direction[0]*m_vitesse;
-    m_positionCentre[1] += m_direction[1]*m_vitesse;
+    if (m_estSurPalet == false)
+    {
+        m_positionCentre[0] += m_direction[0]*m_vitesse;
+        m_positionCentre[1] += m_direction[1]*m_vitesse;
+    }
+}
+
+void Balle::envoyerBalle()
+{
+    m_estSurPalet = false;
+    deplacer();
 }
 
 Balle::~Balle()

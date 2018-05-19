@@ -75,7 +75,7 @@ void Brique::traiterCollision(Balle* &balle)
                 balle->setDirection(dirX, -dirY);
             else if (dirX>0.0f && dirY<=0.0f) // Angle d'arrivée : ]90;180]
                 balle->setDirection(-dirX, dirY);
-            else // Angle d'arrivée : ]90;180[
+            else // Angle d'arrivée : ]-90;-180[
                 balle->setDirection(-dirX, -dirY);
         }
     }
