@@ -32,7 +32,6 @@ SOURCES	+= main.cpp \
     bloc.cpp \
     mur.cpp \
     brique.cpp \
-    sol.cpp \
     cassebriques.cpp \
     mainwindow.cpp \
     parametresdialog.cpp \
@@ -43,7 +42,6 @@ HEADERS += \
     bloc.hpp \
     mur.hpp \
     brique.hpp \
-    sol.hpp \
     cassebriques.hpp \
     mainwindow.hpp \
     parametresdialog.hpp \

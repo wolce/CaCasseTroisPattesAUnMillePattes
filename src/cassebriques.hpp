@@ -10,7 +10,6 @@ class Palet;
 class Mur;
 class Balle;
 class Brique;
-class Sol;
 class Camera;
 
 // Classe dediee a l'affichage d'une scene OpenGL
@@ -96,7 +95,6 @@ private:
 
     // Eléments du jeu
     Palet *m_palet;
-    Sol *m_sol;
     std::vector<Mur *> m_murs;
     std::vector<Balle *> m_balles;
     std::vector<Brique *> m_briques;

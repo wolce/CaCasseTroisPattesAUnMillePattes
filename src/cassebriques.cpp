@@ -4,7 +4,6 @@
 #include <QKeyEvent>
 #include <fstream>
 #include "mur.hpp"
-#include "sol.hpp"
 #include "palet.hpp"
 #include "balle.hpp"
 #include "brique.hpp"
@@ -86,15 +85,10 @@ void CasseBriques::initializeGL()
                       {98.0f, 125.0f},
                       {100.0f, 125.0f},
                       {100.0f, 0.0f}};
-    float pB[4][2] = {{2.0f, 0.0f},
-                      {2.0f, 2.0f},
-                      {98.0f, 2.0f},
-                      {98.0f, 0.0f}};
 
     m_murs.push_back(new Mur(pG, 1, 2.0f));
     m_murs.push_back(new Mur(pD, 2, 98.0f));
     m_murs.push_back(new Mur(pH, 3, 123.0f));
-    m_sol = new Sol(pB, 2.0f);
 
     // Création du palet
     m_palet = new Palet(WIDTH/2.0f, 2.0f, m_largeurPalet, 2.5f, 2.0f, 98.0f);
@@ -251,7 +245,6 @@ CasseBriques::~CasseBriques()
         delete brique;
     m_briques.clear();
 
-    delete m_sol;
     delete m_palet;
 }
 
@@ -296,7 +289,7 @@ void CasseBriques::traitementCollisions()
     while (itBalle != m_balles.end())
     {
         // Collision avec le sol ?
-        if (m_sol->collision(*itBalle) == true)
+        if ((*itBalle)->getCentreY()+(*itBalle)->getRayon() <= 0.0f)
         {
             delete *itBalle;
             itBalle = m_balles.erase(itBalle);
@@ -360,7 +353,6 @@ void CasseBriques::initialiserJeu()
         delete brique;
     m_briques.clear();
 
-    delete m_sol;
     delete m_palet;
 
     m_nombreBallesRestantes = m_nombreBallesInitial;
