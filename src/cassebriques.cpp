@@ -9,6 +9,7 @@
 #include "balle.hpp"
 #include "brique.hpp"
 #include "cassebriques.hpp"
+#include "camera.hpp"
 
 #include <iostream>
 
@@ -19,10 +20,12 @@
 float WIDTH = 2*MAX_DIMENSION;
 float HEIGHT = 2*MAX_DIMENSION * WIN_HEIGHT / WIN_WIDTH;
 
-CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
+CasseBriques::CasseBriques(Camera *camera, QWidget * parent) : QGLWidget(parent)
 {
     // Permet à OpenGL de récupérer les évènements clavier quand il est utilisé avec Qt
     this->setFocusPolicy(Qt::StrongFocus);
+
+    m_camera = camera;
 
     //Autorise les événements souris
     this->setMouseTracking(true);
@@ -183,24 +186,14 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
             // Le palet va à gauche
             case Qt::Key_Left:
             {
-                m_palet->decaler(-0.5f, 0.0f);
-                for (Balle * balle : m_balles)
-                {
-                    if (balle->getEstSurPalet() == true)
-                        balle->setCentreX(m_palet->getCentreX());
-                }
+                deplacerPalet(m_palet->getCentreX()-1.0f);
                 break;
             }
 
             // Le palet va à droite
             case Qt::Key_Right:
             {
-                m_palet->decaler(0.5f, 0.0f);
-                for (Balle * balle : m_balles)
-                {
-                    if (balle->getEstSurPalet() == true)
-                        balle->setCentreX(m_palet->getCentreX());
-                }
+                deplacerPalet(m_palet->getCentreX()+1.0f);
                 break;
             }
 
@@ -272,6 +265,9 @@ void CasseBriques::updateGame()
             if (balle->getEstSurPalet() == false)
                 balle->deplacer();
         }
+
+        if (m_camera->getActive() == true)
+            deplacerPalet(m_palet->getCentreX()+m_camera->getTranslation()/50.0f);
 
         traitementCollisions();
     }
@@ -420,8 +416,6 @@ void CasseBriques::chargerNiveau()
             if (ligne == "*")
                 ++i;
         }
-        std::cout << nombreNiveaux << std::endl;
-        std::cout << choixNiveau << std::endl;
 
         fichier >> m_briquesParLigne;
         fichier >> m_briquesParColonne;
@@ -446,25 +440,37 @@ void CasseBriques::chargerNiveau()
 
 void CasseBriques::mouseMoveEvent(QMouseEvent *event)
 {
-    std::cout << event->pos().x() << std::endl;
-
     if (event->pos().x()-m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH > 2.0f*WIN_WIDTH/(float)WIDTH && event->pos().x()+m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH < WIN_WIDTH - 2.0f*WIN_WIDTH/(float)WIDTH)
     {
-        m_palet->setCentreX(event->pos().x()*WIDTH/(float)WIN_WIDTH);
-        std::cout << event->pos().x() << std::endl;
+        deplacerPalet(event->pos().x()*WIDTH/(float)WIN_WIDTH);
     }
     else
     {
-        if (event->pos().x()-m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH >= 2.0f*WIN_WIDTH/(float)WIDTH)
-            m_palet->setCentreX(98.0f-m_largeurPalet/2.0f);
+        if (event->pos().x()-m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH > 2.0f*WIN_WIDTH/(float)WIDTH)
+            deplacerPalet(98.0f-m_largeurPalet/2.0f);
         else
-            m_palet->setCentreX(2.0f+m_largeurPalet/2.0f);
+            deplacerPalet(2.0f+m_largeurPalet/2.0f);
     }
+
+    event->accept();
+    updateGL();
+}
+
+void CasseBriques::nouvellePartie()
+{
+    m_niveau = 1;
+    m_score = 0;
+    m_perdu = false;
+    m_gagne = false;
+    initialiserJeu();
+}
+
+void CasseBriques::deplacerPalet(float x)
+{
+    m_palet->setCentreX(x);
     for (Balle * balle : m_balles)
     {
         if (balle->getEstSurPalet() == true)
             balle->setCentreX(m_palet->getCentreX());
     }
-    event->accept();
-    updateGL();
 }
