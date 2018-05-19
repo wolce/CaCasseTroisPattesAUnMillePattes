@@ -23,14 +23,14 @@ Balle::Balle(float x, float y, float dirX, float dirY)
     m_vitesse = 0.2f;
 }
 
-Balle::Balle(Palet *palet)
+Balle::Balle(Palet *palet, int niveau)
 {
     m_rayon = 2.0f;
     m_sphere = gluNewQuadric();
 
     // La couleur par défaut de la balle est le bleu :
-    m_couleur[0] = 0.2f;
-    m_couleur[1] = 0.2f;
+    m_couleur[0] = 1.0f;
+    m_couleur[1] = 1.0f;
     m_couleur[2] = 1.0f;
 
     m_positionCentre[0] = palet->getCentreX();
@@ -44,7 +44,7 @@ Balle::Balle(Palet *palet)
     m_direction[0] = cos(dir);
     m_direction[1] = sin(dir);
 
-    m_vitesse = 0.2f;
+    m_vitesse = 0.2f*log(niveau+1);
     m_estSurPalet = true;
 }
 

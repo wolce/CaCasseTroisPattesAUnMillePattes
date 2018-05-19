@@ -3,23 +3,26 @@
 ## A faire (obligatoire)
 
 ```
-• Déplacement du palet commandé par le déplacement de la main du joueur à partir de la WebCam.
-• Décompte des boules utilisées et contrôle de la fin de partie. 
 ```
 
 ## A faire (bonus)
 
 ```
-• Génération aléatoire d’un nouveau niveau avec une vitesse supérieure de la boule par rapport au niveau précédent. 
-• Calcul des points. 
-• Choix de la taille du palet par le joueur 
-• Sauvegarde du score/nom de joueur et affichage du classement 
+ï¿½ Sauvegarde du score/nom de joueur et affichage du classement 
 ```
 
 ## Fait
 
 ```
-• Rebond de la boule sur les murs, sur le palet et sur les briques. 
-• Destruction des briques (disparition) lorsqu’elles sont touchées par la boule. 
-• Rebondissement sur le palet et contrôle de la direction de la boule en fonction du point d’impact sur le palet. 
+Obligatoire :
+ï¿½ Dï¿½placement du palet commandï¿½ par le dï¿½placement de la main du joueur ï¿½ partir de la WebCam.
+ï¿½ Rebond de la boule sur les murs, sur le palet et sur les briques. 
+ï¿½ Destruction des briques (disparition) lorsquï¿½elles sont touchï¿½es par la boule. 
+ï¿½ Rebondissement sur le palet et contrï¿½le de la direction de la boule en fonction du point dï¿½impact sur le palet. 
+ï¿½ Dï¿½compte des boules utilisï¿½es et contrï¿½le de la fin de partie. 
+
+Facultatif :
+ï¿½ Gï¿½nï¿½ration alï¿½atoire dï¿½un nouveau niveau avec une vitesse supï¿½rieure de la boule par rapport au niveau prï¿½cï¿½dent. 
+ï¿½ Calcul des points. 
+ï¿½ Choix de la taille du palet par le joueur.
 ```

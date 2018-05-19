@@ -10,12 +10,26 @@
 
 *.autosave
 
+*.Release
+
+build-test_detectmotion-Desktop_Qt_5_10_0_MinGW_32bit-Debug/Makefile
+
 *.stash
 
 *.Debug
 
-build-test_detectmotion-Desktop_Qt_5_10_0_MinGW_32bit-Debug/Makefile
+*.stash
 
-build-TD1-Desktop_Qt_5_10_1_MinGW_32bit-Debug/
+release/
 
 build-CasseBriques-Desktop_Qt_5_10_1_MinGW_32bit-Debug/
+
+build-CasseBriques-Desktop_Qt_5_10_1_MinGW_32bit-Release/
+
+*.autosave
+
+*.stash
+
+*.Debug
+
+build-test_detectmotion-Desktop_Qt_5_10_0_MinGW_32bit-Debug/Makefile

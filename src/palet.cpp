@@ -19,11 +19,20 @@ Palet::Palet(float x, float y, float largeur, float hauteur, float xMin, float x
     m_points[3][0] = m_position[0]+m_largeur/2.0f;
     m_points[3][1] = m_position[1]-m_hauteur/2.0f;
 
-    m_vitesse = 2.0f;
+    m_vitesse = 4.0f;
     m_angleMin = 25.0f;
 
     m_xMin = xMin;
     m_xMax = xMax;
+}
+
+void Palet::setCentreX(float positionCentreX)
+{
+    m_position[0] = positionCentreX;
+    m_points[0][0] = m_position[0]-m_largeur/2.0f;
+    m_points[1][0] = m_position[0]-m_largeur/2.0f;
+    m_points[2][0] = m_position[0]+m_largeur/2.0f;
+    m_points[3][0] = m_position[0]+m_largeur/2.0f;
 }
 
 void Palet::decaler(const float x, const float y)
@@ -61,7 +70,7 @@ void Palet::traiterCollision(Balle* &balle)
 {
     float x = (balle->getCentreX() - m_points[0][0])/m_largeur; // Position relative de la balle sur le palet (0 au bord gauche et 1 au bord droit)
 
-    x *= (180.0f-2*m_angleMin) + m_angleMin; // On ramène à une échelle [m_angleMin ; 180-m_angleMin]
+    x = x * (180.0f-2*m_angleMin) + m_angleMin; // On ramène à une échelle [m_angleMin ; 180-m_angleMin]
     x = x * M_PI/180.0f; // Passage en radian
 
     balle->setDirection(-cos(x), sin(x)); // Changement de direction de la balle
@@ -76,6 +85,16 @@ void Palet::Display()
         glVertex2f(m_points[2][0], m_points[2][1]);
         glVertex2f(m_points[3][0], m_points[3][1]);
     glEnd();
+}
+
+void Palet::setLargeur(float largeur)
+{
+    m_largeur = largeur;
+
+    m_points[0][0] = m_position[0]-m_largeur/2.0f;
+    m_points[1][0] = m_position[0]-m_largeur/2.0f;
+    m_points[2][0] = m_position[0]+m_largeur/2.0f;
+    m_points[3][0] = m_position[0]+m_largeur/2.0f;
 }
 
 Palet::~Palet()

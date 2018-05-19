@@ -2,12 +2,16 @@
 #include <QDesktopWidget>
 #include <QTimer>
 #include <QKeyEvent>
+#include <fstream>
 #include "mur.hpp"
 #include "sol.hpp"
 #include "palet.hpp"
 #include "balle.hpp"
 #include "brique.hpp"
 #include "cassebriques.hpp"
+#include "camera.hpp"
+
+#include <iostream>
 
 // Declarations des constantes
 #define WIN_WIDTH   600
@@ -16,29 +20,51 @@
 float WIDTH = 2*MAX_DIMENSION;
 float HEIGHT = 2*MAX_DIMENSION * WIN_HEIGHT / WIN_WIDTH;
 
-CasseBriques::CasseBriques(QWidget * parent) : QGLWidget(parent)
+CasseBriques::CasseBriques(Camera *camera, QWidget * parent) : QGLWidget(parent)
 {
+    // Permet à OpenGL de récupérer les évènements clavier quand il est utilisé avec Qt
+    this->setFocusPolicy(Qt::StrongFocus);
+
+    m_camera = camera;
+
+    //Autorise les événements souris
+    this->setMouseTracking(true);
+
     // Reglage de la taille/position
     setFixedSize(WIN_WIDTH, WIN_HEIGHT);
     move(QApplication::desktop()->screen()->rect().center() - rect().center());
 
-    // Timer de rafraîchissement
-    connect(&m_timerFPS,  &QTimer::timeout, [&] {
+    // Timer de rafraîchissement de l'affichage
+    connect(&m_timerGL,  &QTimer::timeout, [&] {
         updateGL();
     });
+    m_timerGL.setInterval(5);
+    m_timerGL.start();
 
-    m_timerFPS.setInterval(10);
-    m_timerFPS.start();
+    // Timer de rafraîchissement du jeu
+    connect(&m_timerGame, &QTimer::timeout, [&] {
+        updateGame();
+    });
+    m_timerGame.setInterval(5);
+    m_timerGame.start();
 
-    m_briquesParLigne = 10;
-    m_briquesParColonne = 12;
+    // Configuration de l'espace
     m_espaceEntreBriquesLigne = 1.0f;
     m_espaceEntreBriquesColonne = 1.0f;
-    m_largeurBrique = (WIDTH-m_espaceEntreBriquesLigne - 4.0f)/m_briquesParLigne - m_espaceEntreBriquesLigne;
+    m_largeurPalet = 20.0f;
+
+    // Configuration du jeu
+    m_nombreBallesInitial = 3;
+    m_nombreBallesRestantes = m_nombreBallesInitial;
+    m_score = 0;
+    m_niveau = 1;
+
+    // Initialisation des booléens utiles à la réalisations de certains événements
     m_collision = false;
     m_balleSurPalet = false;
+    m_perdu = false;
+    m_gagne = false;
 }
-
 
 // Fonction d'initialisation
 void CasseBriques::initializeGL()
@@ -70,20 +96,14 @@ void CasseBriques::initializeGL()
     m_sol = new Sol(pB, 2.0f);
 
     // Création du palet
-    m_palet = new Palet(WIDTH/2.0f, 2.0f, 20.0f, 2.0f, 2.0f, 98.0f);
+    m_palet = new Palet(WIDTH/2.0f, 2.0f, m_largeurPalet, 2.5f, 2.0f, 98.0f);
 
     // Création de la balle
-    m_balles.push_back(new Balle(m_palet));
+    m_balles.push_back(new Balle(m_palet, m_niveau));
     m_balleSurPalet = true;
 
-    // Création des briques
-    for (int i = 0 ; i < m_briquesParLigne ; ++i)
-    {
-        for (int j = 0 ; j < m_briquesParColonne ; ++j)
-        {
-            m_briques.push_back(new Brique((i+1)*m_espaceEntreBriquesLigne + 2.0f + i*m_largeurBrique, 123.0f-(j+1)*m_espaceEntreBriquesColonne - j*m_largeurBrique/3.0f, m_largeurBrique));
-        }
-    }
+    // On dessine les briques (chargement du niveau)
+    chargerNiveau();
 }
 
 // Fonction de redimensionnement
@@ -106,22 +126,20 @@ void CasseBriques::resizeGL(int width, int height)
     glLoadIdentity();
 }
 
-
 // Fonction d'affichage
 void CasseBriques::paintGL()
 {
     // Reinitialisation du tampon de couleur
     glClear(GL_COLOR_BUFFER_BIT);
 
+    // Affichage de l'espace de jeu
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluOrtho2D(0.0, WIDTH, 0.0, HEIGHT);
 
-    // Reinitialisation de la matrice courante
+    // Affichage des éléments du jeu
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-
-    appliquerCollisions();
 
     // Affichage du palet
     m_palet->Display();
@@ -136,76 +154,90 @@ void CasseBriques::paintGL()
 
     // Affichage des balles
     for(Balle * balle : m_balles)
-    {
-        if (balle->getEstSurPalet() == false)
-            balle->deplacer();
         balle->Display();
+
+    // Affichage du texte
+    renderText(10.0f, 33.0f, "Balles : ", QFont("Comic Sans MS", 14));
+    renderText(220.0f, 33.0f, "Score : " + QString::number(m_score), QFont("Comic Sans MS", 14));
+    renderText(455.0f, 33.0f, "Niveau : " + QString::number(m_niveau), QFont("Comic Sans MS", 14));
+
+    // Affichage des balles restantes
+    GLUquadric* tmp=gluNewQuadric();
+    for (unsigned int i = 0 ; i < m_nombreBallesRestantes ; ++i)
+    {
+        glPushMatrix();
+        glTranslatef(13.0f+(i+1)*4, 129.0f, 0.0f);
+        gluSphere(tmp, 1.0, 16, 16);
+        glPopMatrix();
     }
+    gluDeleteQuadric(tmp);
+
+    if (m_perdu)
+        renderText(247.5f, 500.0f, "PERDU", QFont("Comic Sans MS", 20));
 }
 
 // Fonction de gestion d'interactions clavier
 void CasseBriques::keyPressEvent(QKeyEvent * event)
 {
-    switch(event->key())
+    if (!m_perdu && !m_gagne)
     {
-        // Le palet va a gauche
-        case Qt::Key_Left:
+        switch(event->key())
         {
-            m_palet->decaler(-0.5f, 0.0f);
-            for (Balle * balle : m_balles)
+            // Le palet va à gauche
+            case Qt::Key_Left:
             {
-                if (balle->getEstSurPalet() == true)
-                    balle->setCentreX(m_palet->getCentreX());
+                deplacerPalet(m_palet->getCentreX()-1.0f);
+                break;
             }
-            break;
-        }
 
-        // Le palet va a droite
-        case Qt::Key_Right:
-        {
-            m_palet->decaler(0.5f, 0.0f);
-            for (Balle * balle : m_balles)
+            // Le palet va à droite
+            case Qt::Key_Right:
             {
-                if (balle->getEstSurPalet() == true)
-                    balle->setCentreX(m_palet->getCentreX());
+                deplacerPalet(m_palet->getCentreX()+1.0f);
+                break;
             }
-            break;
-        }
 
-        case Qt::Key_Space:
-        {
-            for (Balle * balle : m_balles)
+            case Qt::Key_Space:
             {
-                if (balle->getEstSurPalet() == true)
+                for (Balle * balle : m_balles)
                 {
-                    balle->deplacer();
-                    balle->setEstSurPalet(false);
+                    if (balle->getEstSurPalet() == true)
+                    {
+                        balle->deplacer();
+                        balle->setEstSurPalet(false);
+                        m_nombreBallesRestantes--;
+                    }
                 }
+                if (m_balleSurPalet == false && m_nombreBallesRestantes > 0)
+                {
+                    m_balles.push_back(new Balle(m_palet, m_niveau));
+                    m_balleSurPalet = true;
+                }
+                else
+                    m_balleSurPalet = false;
+                break;
             }
-            if (m_balleSurPalet == false)
+
+            default:
             {
-                m_balles.push_back(new Balle(m_palet));
-                m_balleSurPalet = true;
+                // Ignorer l'evenement
+                event->ignore();
+                return;
             }
-            else
-                m_balleSurPalet = false;
-            break;
         }
 
-        default:
-        {
-            // Ignorer l'evenement
-            event->ignore();
-            return;
-        }
+        // Acceptation de l'evenement et mise a jour de la scene
+        event->accept();
+        updateGL();
     }
-
-    // Acceptation de l'evenement et mise a jour de la scene
-    event->accept();
-    updateGL();
+    else
+    {
+        event->ignore();
+        return;
+    }
 }
 
- CasseBriques::~CasseBriques()
+CasseBriques::~CasseBriques()
 {
     for (Mur * mur : m_murs)
         delete mur;
@@ -223,7 +255,27 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
     delete m_palet;
 }
 
-void CasseBriques::appliquerCollisions()
+void CasseBriques::updateGame()
+{
+    testJeuEnCours();
+    if (!m_gagne && !m_perdu)
+    {
+        for(Balle * balle : m_balles)
+        {
+            if (balle->getEstSurPalet() == false)
+                balle->deplacer();
+        }
+
+        if (m_camera->getActive() == true)
+            deplacerPalet(m_palet->getCentreX()+m_camera->getTranslation()/50.0f);
+
+        traitementCollisions();
+    }
+    else
+        finDuJeu();
+}
+
+void CasseBriques::traitementCollisions()
 {
     // Gestion des collisions pour chaque balle
     std::vector<Balle *>::iterator itBalle=m_balles.begin();
@@ -234,6 +286,7 @@ void CasseBriques::appliquerCollisions()
         {
             delete *itBalle;
             itBalle = m_balles.erase(itBalle);
+            m_score -= 200;
         }
         else
         {
@@ -259,9 +312,9 @@ void CasseBriques::appliquerCollisions()
                         (*itBrique)->traiterCollision(*itBalle);
                         m_collision = true;
                     }
-
                     delete *itBrique;
-                    itBrique = m_briques.erase(itBrique); // Si on supprime la brique on redéfinit l'itérateur à la position courante
+                    itBrique = m_briques.erase(itBrique); // On supprime la brique donc on redéfinit l'itérateur à la position courante
+                    m_score += 10;
                 }
                 else
                     ++itBrique; // Si la brique n'est pas supprimée on incrémente l'itérateur
@@ -269,5 +322,155 @@ void CasseBriques::appliquerCollisions()
             m_collision = false;
             itBalle++;
         }
+    }
+}
+
+void CasseBriques::finDuJeu()
+{
+    m_timerGL.stop();
+    m_timerGame.stop();
+    updateGL(); // Permet d'effacer la dernière balle si l'affichage n'a pas été mis à jour (décalage entre les timers)
+
+    if (m_perdu)
+    {
+        // On rentre les scores
+    }
+
+    else if (m_gagne)
+    {
+        m_niveau++;
+        initialiserJeu();
+    }
+}
+
+void CasseBriques::initialiserJeu()
+{
+    for (Mur * mur : m_murs)
+        delete mur;
+    m_murs.clear();
+
+    for (Balle * balle : m_balles)
+        delete balle;
+    m_balles.clear();
+
+    for (Brique * brique : m_briques)
+        delete brique;
+    m_briques.clear();
+
+    delete m_sol;
+    delete m_palet;
+
+    m_nombreBallesRestantes = m_nombreBallesInitial;
+
+    initializeGL();
+
+    m_gagne = false;
+    m_timerGame.start();
+    m_timerGL.start();
+}
+
+void CasseBriques::testJeuEnCours()
+{
+    if (m_balles.empty() && m_nombreBallesRestantes == 0)
+    {
+        m_perdu = true;
+    }
+    else if (m_briques.empty())
+    {
+        m_gagne = true;
+    }
+}
+
+void CasseBriques::setLargeurPalet(float largeur)
+{
+    m_largeurPalet = largeur;
+    m_palet->setLargeur(m_largeurPalet);
+}
+
+void CasseBriques::chargerNiveau()
+{
+    std::ifstream fichier("debug/niveaux.txt");
+
+    std::string ligne;
+    char a;
+    int nombreNiveaux = 0;
+    int choixNiveau;
+    int i = 0;
+
+    if(fichier) // Si l'ouverture du fichier s'est bien déroulée, alors on peut effectuer le traitement suivant
+    {
+        while (std::getline(fichier, ligne))
+        {
+            if (ligne == "*")
+                nombreNiveaux++;
+        }
+
+        fichier.clear();
+        fichier.seekg(0, std::ios::beg);
+
+        choixNiveau = rand()%(nombreNiveaux)+1;
+
+        while(i < choixNiveau)
+        {
+            std::getline(fichier, ligne);
+            if (ligne == "*")
+                ++i;
+        }
+
+        fichier >> m_briquesParLigne;
+        fichier >> m_briquesParColonne;
+        fichier.get(a);
+
+        m_largeurBrique = (WIDTH-m_espaceEntreBriquesLigne - 4.0f)/m_briquesParLigne - m_espaceEntreBriquesLigne;
+
+        for (int i = 0 ; i < m_briquesParColonne ; ++i)
+        {
+            for (int j = 0 ; j < m_briquesParLigne ; ++j)
+            {
+                fichier.get(a);
+                if (a == '1')
+                {
+                    m_briques.push_back(new Brique((j+1)*m_espaceEntreBriquesLigne + 2.0f + j*m_largeurBrique, 123.0f-(i+1)*m_espaceEntreBriquesColonne - i*m_largeurBrique/3.0f, m_largeurBrique));
+                }
+            }
+            fichier.get(a);
+        }
+    }
+}
+
+void CasseBriques::mouseMoveEvent(QMouseEvent *event)
+{
+    if (event->pos().x()-m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH > 2.0f*WIN_WIDTH/(float)WIDTH && event->pos().x()+m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH < WIN_WIDTH - 2.0f*WIN_WIDTH/(float)WIDTH)
+    {
+        deplacerPalet(event->pos().x()*WIDTH/(float)WIN_WIDTH);
+    }
+    else
+    {
+        if (event->pos().x()-m_largeurPalet/2.0f*WIN_WIDTH/(float)WIDTH > 2.0f*WIN_WIDTH/(float)WIDTH)
+            deplacerPalet(98.0f-m_largeurPalet/2.0f);
+        else
+            deplacerPalet(2.0f+m_largeurPalet/2.0f);
+    }
+
+    event->accept();
+    updateGL();
+}
+
+void CasseBriques::nouvellePartie()
+{
+    m_niveau = 1;
+    m_score = 0;
+    m_perdu = false;
+    m_gagne = false;
+    initialiserJeu();
+}
+
+void CasseBriques::deplacerPalet(float x)
+{
+    m_palet->setCentreX(x);
+    for (Balle * balle : m_balles)
+    {
+        if (balle->getEstSurPalet() == true)
+            balle->setCentreX(m_palet->getCentreX());
     }
 }
