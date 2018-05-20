@@ -230,6 +230,7 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
 
         // Acceptation de l'evenement et mise a jour de la scene
         event->accept();
+        updateGame();
         updateGL();
 }
 
@@ -265,6 +266,7 @@ void CasseBriques::updateGame()
             deplacerPalet(m_palet->getCentreX()+m_camera->getTranslation()/50.0f);
 
         traitementCollisions(); // On faire réagir les balles lorsqu'elles touchent des objets
+
     }
     else // Si le joueur a perdu ou gagné, on arrête le jeu
     {
@@ -454,6 +456,7 @@ void CasseBriques::mouseMoveEvent(QMouseEvent *event)
     }
 
     event->accept();
+    updateGame();
     updateGL();
 }
 

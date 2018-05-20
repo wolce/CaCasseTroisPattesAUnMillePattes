@@ -74,7 +74,7 @@ void Palet::traiterCollision(Balle* &balle)
     float dirY = balle->getDirectionY();
     float rayon = balle->getRayon();
 
-    if (y>m_points[1][1] && !(x<m_points[1][0] || x>m_points[2][0]))
+    if (y>m_points[1][1] && x+rayon>=m_points[1][0] && x-rayon<=m_points[2][0])
     {
         float pos = (x - m_points[0][0])/m_largeur; // Position relative de la balle sur le palet (0 au bord gauche et 1 au bord droit)
 
@@ -82,6 +82,8 @@ void Palet::traiterCollision(Balle* &balle)
         pos = pos * M_PI/180.0f; // Passage en radian
 
         balle->setDirection(-cos(pos), sin(pos)); // Changement de direction de la balle
+
+        m_codeDerniereCollision = 2;
     }
 
     else if (!(y<m_points[0][1] || y>m_points[1][1]) && x<m_points[1][0])
@@ -90,6 +92,8 @@ void Palet::traiterCollision(Balle* &balle)
             balle->setDirection(-dirX, dirY);
 
         balle->setCentreX(m_points[0][0]-rayon);
+
+        m_codeDerniereCollision = 1;
     }
 
     else if (!(y<m_points[0][1] || y>m_points[1][1]) && x>m_points[2][0])
@@ -98,6 +102,18 @@ void Palet::traiterCollision(Balle* &balle)
             balle->setDirection(-dirX, dirY);
 
         balle->setCentreX(m_points[2][0]+rayon);
+
+        m_codeDerniereCollision = 3;
+    }
+
+    else
+    {
+        if (m_codeDerniereCollision == 1)
+            balle->setCentreX(m_points[0][0]-rayon);
+        else if (m_codeDerniereCollision == 3)
+            balle->setCentreX(m_points[2][0]+rayon);
+        else
+            balle->setCentreY(m_points[0][1]-rayon);
     }
 }
 

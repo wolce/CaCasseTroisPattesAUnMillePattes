@@ -19,8 +19,6 @@ public:
 private:
 
     float m_position[2]; // Position du coin supérieur gauche
-    float m_largeur;
-    float m_hauteur;
 
 };
 

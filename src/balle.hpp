@@ -35,6 +35,7 @@ public:
     float getCentreX() const {return m_positionCentre[0];}
     float getCentreY() const {return m_positionCentre[1];}
     void setCentreX(float x) {m_positionCentre[0] = x;}
+    void setCentreY(float y) {m_positionCentre[1] = y;}
 
     // Rayon de la balle
     float getRayon() const {return m_rayon;}
