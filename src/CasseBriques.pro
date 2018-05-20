@@ -36,7 +36,9 @@ SOURCES	+= main.cpp \
     mainwindow.cpp \
     parametresdialog.cpp \
     camera.cpp \
-    joueur.cpp
+    joueur.cpp \
+    listejoueurs.cpp \
+    joueursdialog.cpp
 HEADERS += \
     balle.hpp \
     palet.hpp \
@@ -47,7 +49,10 @@ HEADERS += \
     mainwindow.hpp \
     parametresdialog.hpp \
     camera.hpp \
-    joueur.hpp
+    joueur.hpp \
+    listejoueurs.hpp \
+    joueursdialog.hpp
 
 FORMS += \
-    parametresdialog.ui
+    parametresdialog.ui \
+    joueursdialog.ui
