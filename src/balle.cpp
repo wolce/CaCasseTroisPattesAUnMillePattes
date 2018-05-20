@@ -44,7 +44,7 @@ Balle::Balle(Palet *palet, int niveau)
     m_direction[0] = cos(dir);
     m_direction[1] = sin(dir);
 
-    m_vitesse = 0.2f*log(niveau+1);
+    m_vitesse = 0.2f*log(sqrt(niveau+1));
     m_estSurPalet = true;
 }
 

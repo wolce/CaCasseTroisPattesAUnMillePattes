@@ -56,6 +56,7 @@ CasseBriques::CasseBriques(Camera *camera, QWidget * parent) : QGLWidget(parent)
     // Configuration du jeu
     m_nombreBallesInitial = 3;
     m_nombreBallesRestantes = m_nombreBallesInitial;
+    m_nombreBallesEnCours = 0;
     m_score = 0;
     m_niveau = 1;
 
@@ -203,6 +204,7 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
                         {
                             balle->envoyerBalle();
                             m_nombreBallesRestantes--;
+                            m_nombreBallesEnCours++;
                         }
                     }
 
@@ -293,13 +295,17 @@ void CasseBriques::traitementCollisions()
         {
             delete *itBalle;
             itBalle = m_balles.erase(itBalle);
-            m_score -= 200;
+            m_score -= 2000;
+            m_nombreBallesEnCours--;
         }
         else
         {
             // Collision avec le palet ?
             if ((*itBalle)->getEstSurPalet() == false && m_palet->collision(*itBalle) == true)
+            {
                 m_palet->traiterCollision(*itBalle);
+                m_score -= static_cast<int>(m_palet->getLargeur());
+            }
 
             // Collision avec un des murs ?
             for(Mur * mur : m_murs)
@@ -321,7 +327,7 @@ void CasseBriques::traitementCollisions()
                     }
                     delete *itBrique;
                     itBrique = m_briques.erase(itBrique); // On supprime la brique donc on redéfinit l'itérateur à la position courante
-                    m_score += 10;
+                    m_score += 100*m_nombreBallesEnCours;
                 }
                 else
                     ++itBrique; // Si la brique n'est pas supprimée on incrémente l'itérateur

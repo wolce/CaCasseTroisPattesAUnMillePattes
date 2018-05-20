@@ -21,6 +21,7 @@ public:
     float getAngleMin() const {return m_angleMin;}
     void setLargeur(float largeur);
     void setCentreX(float positionCentreX);
+    float getLargeur() const {return m_largeur;}
 private:
     float m_vitesse;
     float m_position[2]; // Position du centre

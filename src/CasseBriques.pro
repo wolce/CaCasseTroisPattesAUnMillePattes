@@ -35,7 +35,8 @@ SOURCES	+= main.cpp \
     cassebriques.cpp \
     mainwindow.cpp \
     parametresdialog.cpp \
-    camera.cpp
+    camera.cpp \
+    joueur.cpp
 HEADERS += \
     balle.hpp \
     palet.hpp \
@@ -45,7 +46,8 @@ HEADERS += \
     cassebriques.hpp \
     mainwindow.hpp \
     parametresdialog.hpp \
-    camera.hpp
+    camera.hpp \
+    joueur.hpp
 
 FORMS += \
     parametresdialog.ui
