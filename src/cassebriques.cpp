@@ -9,6 +9,7 @@
 #include "brique.hpp"
 #include "cassebriques.hpp"
 #include "camera.hpp"
+#include "listejoueurs.hpp"
 
 #include <iostream>
 
@@ -19,13 +20,16 @@
 float WIDTH = 2*MAX_DIMENSION;
 float HEIGHT = 2*MAX_DIMENSION * WIN_HEIGHT / WIN_WIDTH;
 
-CasseBriques::CasseBriques(Camera *camera, QWidget * parent) : QGLWidget(parent)
+CasseBriques::CasseBriques(Camera *camera, ListeJoueurs *joueurs, QWidget * parent) : QGLWidget(parent)
 {
     // Permet à OpenGL de récupérer les évènements clavier quand il est utilisé avec Qt
     this->setFocusPolicy(Qt::StrongFocus);
 
     // On récupère la caméra passée en paramètre (servira à récupérer la translation pour le déplacement du palet)
     m_camera = camera;
+
+    // On récupère les joueurs
+    m_joueurs = joueurs;
 
     // Autorise les événements souris (pour diriger le palet)
     this->setMouseTracking(true);
@@ -230,7 +234,7 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
 
         // Acceptation de l'evenement et mise a jour de la scene
         event->accept();
-        updateGame();
+        if (!m_gagne && !m_perdu) updateGame();
         updateGL();
 }
 
@@ -270,11 +274,12 @@ void CasseBriques::updateGame()
     }
     else // Si le joueur a perdu ou gagné, on arrête le jeu
     {
+        std::cout<<"a"<<std::endl;
         stopJeu();
 
         if (m_perdu)
         {
-            // On rentre les scores
+            m_joueurs->getJoueurCourant()->setScore(m_score);
         }
 
         else if (m_gagne)
@@ -456,7 +461,7 @@ void CasseBriques::mouseMoveEvent(QMouseEvent *event)
     }
 
     event->accept();
-    updateGame();
+    if (!m_gagne && !m_perdu) updateGame();
     updateGL();
 }
 

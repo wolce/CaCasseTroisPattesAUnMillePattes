@@ -28,28 +28,28 @@
           </widget>
          </item>
          <item>
-          <widget class="QListWidget" name="listWidget">
+          <widget class="QListWidget" name="m_joueurs">
            <property name="sortingEnabled">
             <bool>false</bool>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="boutonSelectionnerJoueur">
            <property name="text">
             <string>Sélectionner le joueur</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="boutonAjouterJoueur">
            <property name="text">
             <string>Ajouter un joueur</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_2">
+          <widget class="QPushButton" name="boutonSupprimerJoueur">
            <property name="text">
             <string>Supprimer le joueur</string>
            </property>
@@ -60,14 +60,14 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="QLabel" name="label_3">
+          <widget class="QLabel" name="labelJoueur">
            <property name="text">
-            <string>TextLabel</string>
+            <string/>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QTableWidget" name="tableWidget_3">
+          <widget class="QTableWidget" name="tableWidgetScoreJoueur">
            <property name="sizeAdjustPolicy">
             <enum>QAbstractScrollArea::AdjustToContents</enum>
            </property>
@@ -99,7 +99,7 @@
             <bool>false</bool>
            </attribute>
            <attribute name="verticalHeaderVisible">
-            <bool>true</bool>
+            <bool>false</bool>
            </attribute>
            <attribute name="verticalHeaderCascadingSectionResizes">
             <bool>true</bool>
@@ -148,7 +148,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QTableWidget" name="tableWidget">
+          <widget class="QTableWidget" name="tableWidgetMeilleursJoueurs">
            <property name="sizeAdjustPolicy">
             <enum>QAbstractScrollArea::AdjustToContents</enum>
            </property>
@@ -186,7 +186,7 @@
             <bool>false</bool>
            </attribute>
            <attribute name="verticalHeaderVisible">
-            <bool>true</bool>
+            <bool>false</bool>
            </attribute>
            <attribute name="verticalHeaderCascadingSectionResizes">
             <bool>true</bool>
@@ -224,6 +224,13 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
+        <widget class="QLabel" name="labelJoueurCourant">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -237,7 +244,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_5">
+        <widget class="QPushButton" name="boutonFermer">
          <property name="text">
           <string>Fermer</string>
          </property>
@@ -250,5 +257,41 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>m_joueurs</sender>
+   <signal>itemSelectionChanged()</signal>
+   <receiver>JoueursDialog</receiver>
+   <slot>selectionChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>177</x>
+     <y>193</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>365</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>boutonFermer</sender>
+   <signal>clicked()</signal>
+   <receiver>JoueursDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>669</x>
+     <y>361</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>585</x>
+     <y>365</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>selectionChanged()</slot>
+ </slots>
 </ui>

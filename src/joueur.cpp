@@ -1,5 +1,8 @@
 #include <fstream>
+#include <algorithm>
 #include "joueur.hpp"
+
+#include <iostream>
 
 using namespace std;
 
@@ -22,6 +25,7 @@ Joueur::Joueur(std::string nom)
 void Joueur::charger(std::ifstream &is)
 {
     string ligne;
+    char a;
 
     getline(is,m_nom,';');
 
@@ -30,6 +34,7 @@ void Joueur::charger(std::ifstream &is)
         getline(is,ligne,';');
         m_meilleursScores[i] = stol(ligne);
     }
+    is.get(a);
 }
 
 void Joueur::sauver(std::ofstream &os)
@@ -42,13 +47,19 @@ void Joueur::sauver(std::ofstream &os)
 
 void Joueur::setScore(long score)
 {
-    int indicePlusPetitScore = 0;
+    sort(begin(m_meilleursScores), end(m_meilleursScores));
 
-    for (int i=1 ; i<10 ; ++i)
+    int i=0;
+    while (score > m_meilleursScores[i] && i<10)
     {
-        if (m_meilleursScores[indicePlusPetitScore] < m_meilleursScores[i])
-            indicePlusPetitScore = i;
+        i++;
     }
 
-    m_meilleursScores[indicePlusPetitScore] = score;
+    if (i>0)
+    {
+        for (int j=0 ; j<i ;++j)
+            m_meilleursScores[j]=m_meilleursScores[j+1];
+
+        m_meilleursScores[i-1] = score;
+    }
 }

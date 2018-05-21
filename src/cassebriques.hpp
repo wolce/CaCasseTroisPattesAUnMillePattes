@@ -11,6 +11,7 @@ class Mur;
 class Balle;
 class Brique;
 class Camera;
+class ListeJoueurs;
 
 // Classe dediee a l'affichage d'une scene OpenGL
 class CasseBriques : public QGLWidget
@@ -23,7 +24,7 @@ public:
     /* Constructeur & Destructeur */
     /******************************/
 
-    CasseBriques(Camera* camera, QWidget * parent = nullptr);
+    CasseBriques(Camera* camera, ListeJoueurs *joueurs, QWidget * parent = nullptr);
     ~CasseBriques();
 
     /***************/
@@ -85,6 +86,9 @@ private:
     /*************/
     /* Attributs */
     /*************/
+
+    // Joueurs
+    ListeJoueurs* m_joueurs;
 
     // Caméra
     Camera* m_camera;

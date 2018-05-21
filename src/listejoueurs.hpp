@@ -11,11 +11,13 @@ public:
 
     ListeJoueurs();
     ~ListeJoueurs();
-    void setJoueurCourant(std::string nom);
+    void setJoueurCourant() {m_joueurCourant = NULL;}
+    void setJoueurCourant(Joueur &j);
     void setScore(long score);
-    void charger();
-    void sauver();
-    void nouveauJoueur(std::string nom);
+    Joueur *getJoueurCourant() {return m_joueurCourant;}
+    void charger(std::ifstream &is);
+    void sauver(std::ofstream &os);
+    //void nouveauJoueur(std::string nom);
 
 private:
     std::string m_cheminFichierJoueurs;

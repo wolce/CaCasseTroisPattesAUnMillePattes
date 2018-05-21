@@ -1,15 +1,19 @@
 #include <QMenuBar>
 #include <QtWidgets>
 #include <QSizePolicy>
+#include <fstream>
 #include "parametresdialog.hpp"
+#include "joueursdialog.hpp"
 #include "camera.hpp"
 #include "cassebriques.hpp"
+#include "listejoueurs.hpp"
 #include "mainwindow.hpp"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
     m_camera = new Camera(m_casseBriques);
-    m_casseBriques = new CasseBriques(m_camera, this);
+    m_joueurs = new ListeJoueurs();
+    m_casseBriques = new CasseBriques(m_camera, m_joueurs, this);
 
     m_layoutCentral = new QHBoxLayout();
     m_layoutCentral->addWidget(m_casseBriques);
@@ -29,6 +33,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(actionNouvellePartie, SIGNAL(triggered(bool)), this, SLOT(slotNouvellePartie()));
     menuJeu->addAction(actionNouvellePartie);
 
+    QAction* actionJoueurs = new QAction(tr("&Joueurs"));
+    connect(actionJoueurs, SIGNAL(triggered(bool)), this, SLOT(slotJoueurs()));
+    menuJeu->addAction(actionJoueurs);
+
     QAction* actionParametres = new QAction(tr("&Paramètres"));
     connect(actionParametres, SIGNAL(triggered(bool)), this, SLOT(slotParametres()));
     menuJeu->addAction(actionParametres);
@@ -36,6 +44,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     QAction* actionQuitter = new QAction(tr("&Quitter"));
     connect(actionQuitter, SIGNAL(triggered(bool)), this, SLOT(slotQuitter()));
     menuJeu->addAction(actionQuitter);
+
+    QString name=QString("%1/joueurs.txt").arg(QDir::homePath());
+    std::ifstream is(name.toStdString().c_str());
+    if (is.good()) m_joueurs->charger(is);
 }
 
 void MainWindow::updateWidgetCentral()
@@ -74,8 +86,19 @@ void MainWindow::slotParametres()
     dial.exec();
 }
 
+void MainWindow::slotJoueurs()
+{
+    JoueursDialog dial(m_joueurs, this);
+    dial.exec();
+}
+
 MainWindow::~MainWindow()
 {
+    QString name=QString("%1/joueurs.txt").arg(QDir::homePath());
+    std::ofstream os(name.toStdString().c_str());
+    if (os.good()) m_joueurs->sauver(os);
+
     delete m_casseBriques;
     delete m_camera;
+    delete m_joueurs;
 }

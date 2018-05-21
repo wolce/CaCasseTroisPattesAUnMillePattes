@@ -5,6 +5,7 @@
 
 class Camera;
 class CasseBriques;
+class ListeJoueurs;
 class QHBoxLayout;
 
 class MainWindow : public QMainWindow
@@ -23,10 +24,12 @@ private slots:
     void slotNouvellePartie();
     void slotQuitter();
     void slotParametres();
+    void slotJoueurs();
 
 private:
     CasseBriques* m_casseBriques;
     Camera* m_camera;
+    ListeJoueurs* m_joueurs;
     QHBoxLayout* m_layoutCentral;
     QWidget* m_widgetCentral;
 };

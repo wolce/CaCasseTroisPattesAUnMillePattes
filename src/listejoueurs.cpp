@@ -1,11 +1,14 @@
 #include <fstream>
 #include "listejoueurs.hpp"
 
+#include <iostream>
+
 using namespace std;
 
 ListeJoueurs::ListeJoueurs()
 {
     m_joueurCourant = NULL;
+    m_cheminFichierJoueurs = "debug/niveaux.txt";
 }
 
 ListeJoueurs::~ListeJoueurs()
@@ -13,16 +16,9 @@ ListeJoueurs::~ListeJoueurs()
     delete m_joueurCourant;
 }
 
-void ListeJoueurs::setJoueurCourant(string nom)
+void ListeJoueurs::setJoueurCourant(Joueur& j)
 {
-    for (iterator it=begin() ; it!=end() ; it++)
-    {
-        if (it->getNom() == nom)
-        {
-            m_joueurCourant = &(*it);
-            break;
-        }
-    }
+    m_joueurCourant = &j;
 }
 
 void ListeJoueurs::setScore(long score)
@@ -31,25 +27,31 @@ void ListeJoueurs::setScore(long score)
         m_joueurCourant->setScore(score);
 }
 
-void ListeJoueurs::charger()
+void ListeJoueurs::charger(std::ifstream &is)
 {
-    ifstream fichier(m_cheminFichierJoueurs.c_str());
     string ligne;
+    int n;
 
-    while (! fichier.eof())
+    clear();
+
+    is >> n;
+    is.ignore();
+
+    for (int i=0;i<n;i++)
     {
         Joueur j;
-        j.charger(fichier);
+        j.charger(is);
         push_back(j);
     }
 }
 
-void ListeJoueurs::sauver()
+void ListeJoueurs::sauver(ofstream &os)
 {
-    ofstream fichier(m_cheminFichierJoueurs.c_str(), ios::out | ios::app);
-    for (iterator it=begin() ; it!=end() ; it++) it->sauver(fichier);
+    os << size() << endl;
+    for (iterator it=begin() ; it!=end() ; it++) it->sauver(os);
 }
 
+/*
 void ListeJoueurs::nouveauJoueur(string nom)
 {
     push_back(Joueur(nom));
@@ -61,4 +63,4 @@ void ListeJoueurs::nouveauJoueur(string nom)
         fichier << nom << ';' << endl;
         fichier.close();
     }
-}
+}*/
