@@ -4,12 +4,12 @@
 #include <QKeyEvent>
 #include <fstream>
 #include "mur.hpp"
-#include "sol.hpp"
 #include "palet.hpp"
 #include "balle.hpp"
 #include "brique.hpp"
 #include "cassebriques.hpp"
 #include "camera.hpp"
+#include "listejoueurs.hpp"
 
 #include <iostream>
 
@@ -20,32 +20,36 @@
 float WIDTH = 2*MAX_DIMENSION;
 float HEIGHT = 2*MAX_DIMENSION * WIN_HEIGHT / WIN_WIDTH;
 
-CasseBriques::CasseBriques(Camera *camera, QWidget * parent) : QGLWidget(parent)
+CasseBriques::CasseBriques(Camera *camera, ListeJoueurs *joueurs, QWidget * parent) : QGLWidget(parent)
 {
     // Permet à OpenGL de récupérer les évènements clavier quand il est utilisé avec Qt
     this->setFocusPolicy(Qt::StrongFocus);
 
+    // On récupère la caméra passée en paramètre (servira à récupérer la translation pour le déplacement du palet)
     m_camera = camera;
 
-    //Autorise les événements souris
+    // On récupère les joueurs
+    m_joueurs = joueurs;
+
+    // Autorise les événements souris (pour diriger le palet)
     this->setMouseTracking(true);
 
-    // Reglage de la taille/position
+    // Reglage de la taille/position du widget OpenGL
     setFixedSize(WIN_WIDTH, WIN_HEIGHT);
     move(QApplication::desktop()->screen()->rect().center() - rect().center());
 
-    // Timer de rafraîchissement de l'affichage
+    // Timer pour le module d'affichage
     connect(&m_timerGL,  &QTimer::timeout, [&] {
         updateGL();
     });
-    m_timerGL.setInterval(5);
+    m_timerGL.setInterval(3);
     m_timerGL.start();
 
-    // Timer de rafraîchissement du jeu
+    // Timer pour le module de jeu
     connect(&m_timerGame, &QTimer::timeout, [&] {
         updateGame();
     });
-    m_timerGame.setInterval(5);
+    m_timerGame.setInterval(3);
     m_timerGame.start();
 
     // Configuration de l'espace
@@ -56,6 +60,7 @@ CasseBriques::CasseBriques(Camera *camera, QWidget * parent) : QGLWidget(parent)
     // Configuration du jeu
     m_nombreBallesInitial = 3;
     m_nombreBallesRestantes = m_nombreBallesInitial;
+    m_nombreBallesEnCours = 0;
     m_score = 0;
     m_niveau = 1;
 
@@ -66,7 +71,7 @@ CasseBriques::CasseBriques(Camera *camera, QWidget * parent) : QGLWidget(parent)
     m_gagne = false;
 }
 
-// Fonction d'initialisation
+// Fonction d'initialisation d'OpenGL
 void CasseBriques::initializeGL()
 {
     // Reglage de la couleur de fond
@@ -85,15 +90,10 @@ void CasseBriques::initializeGL()
                       {98.0f, 125.0f},
                       {100.0f, 125.0f},
                       {100.0f, 0.0f}};
-    float pB[4][2] = {{2.0f, 0.0f},
-                      {2.0f, 2.0f},
-                      {98.0f, 2.0f},
-                      {98.0f, 0.0f}};
 
     m_murs.push_back(new Mur(pG, 1, 2.0f));
     m_murs.push_back(new Mur(pD, 2, 98.0f));
     m_murs.push_back(new Mur(pH, 3, 123.0f));
-    m_sol = new Sol(pB, 2.0f);
 
     // Création du palet
     m_palet = new Palet(WIDTH/2.0f, 2.0f, m_largeurPalet, 2.5f, 2.0f, 98.0f);
@@ -156,12 +156,12 @@ void CasseBriques::paintGL()
     for(Balle * balle : m_balles)
         balle->Display();
 
-    // Affichage du texte
+    // Affichage des textes
     renderText(10.0f, 33.0f, "Balles : ", QFont("Comic Sans MS", 14));
     renderText(220.0f, 33.0f, "Score : " + QString::number(m_score), QFont("Comic Sans MS", 14));
     renderText(455.0f, 33.0f, "Niveau : " + QString::number(m_niveau), QFont("Comic Sans MS", 14));
 
-    // Affichage des balles restantes
+    // Affichage de l'indicateur de balles restantes
     GLUquadric* tmp=gluNewQuadric();
     for (unsigned int i = 0 ; i < m_nombreBallesRestantes ; ++i)
     {
@@ -172,6 +172,7 @@ void CasseBriques::paintGL()
     }
     gluDeleteQuadric(tmp);
 
+    // Affichage du texte "Perdu" si l'utilisateur a perdu
     if (m_perdu)
         renderText(247.5f, 500.0f, "PERDU", QFont("Comic Sans MS", 20));
 }
@@ -179,42 +180,47 @@ void CasseBriques::paintGL()
 // Fonction de gestion d'interactions clavier
 void CasseBriques::keyPressEvent(QKeyEvent * event)
 {
-    if (!m_perdu && !m_gagne)
-    {
+
         switch(event->key())
         {
-            // Le palet va à gauche
+            // Déplacer le palet à gauche
             case Qt::Key_Left:
             {
                 deplacerPalet(m_palet->getCentreX()-1.0f);
                 break;
             }
 
-            // Le palet va à droite
+            // Déplacer le palet à droite
             case Qt::Key_Right:
             {
                 deplacerPalet(m_palet->getCentreX()+1.0f);
                 break;
             }
 
+            // Charger une balle sur le palet et la lancer
             case Qt::Key_Space:
             {
-                for (Balle * balle : m_balles)
+                if (!m_perdu && !m_gagne) // Cela est possible que si une partie est en cours
                 {
-                    if (balle->getEstSurPalet() == true)
+                    for (Balle * balle : m_balles) // Si une des balles est sur le palet, alors on l'envoie
                     {
-                        balle->deplacer();
-                        balle->setEstSurPalet(false);
-                        m_nombreBallesRestantes--;
+                        if (balle->getEstSurPalet() == true)
+                        {
+                            balle->envoyerBalle();
+                            m_nombreBallesRestantes--;
+                            m_nombreBallesEnCours++;
+                        }
                     }
+
+                    if (m_balleSurPalet == false && m_nombreBallesRestantes > 0) // S'il n'y a pas de balle sur le palet et qu'il reste des balles en stock, alors on en charge une sur le palet
+                    {
+                        m_balles.push_back(new Balle(m_palet, m_niveau));
+                        m_balleSurPalet = true;
+                    }
+                    else // Sinon c'est qu'on vient d'envoyer une balle ou qu'on n'en a plus en stock
+                        m_balleSurPalet = false;
                 }
-                if (m_balleSurPalet == false && m_nombreBallesRestantes > 0)
-                {
-                    m_balles.push_back(new Balle(m_palet, m_niveau));
-                    m_balleSurPalet = true;
-                }
-                else
-                    m_balleSurPalet = false;
+
                 break;
             }
 
@@ -228,13 +234,8 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
 
         // Acceptation de l'evenement et mise a jour de la scene
         event->accept();
+        if (!m_gagne && !m_perdu) updateGame();
         updateGL();
-    }
-    else
-    {
-        event->ignore();
-        return;
-    }
 }
 
 CasseBriques::~CasseBriques()
@@ -251,28 +252,42 @@ CasseBriques::~CasseBriques()
         delete brique;
     m_briques.clear();
 
-    delete m_sol;
     delete m_palet;
 }
 
 void CasseBriques::updateGame()
 {
-    testJeuEnCours();
+    testJeuEnCours(); // On regarde si le joueur a gagné ou perdu
+
     if (!m_gagne && !m_perdu)
     {
-        for(Balle * balle : m_balles)
+        for(Balle * balle : m_balles) // On déplace chaque balle
         {
-            if (balle->getEstSurPalet() == false)
-                balle->deplacer();
+            balle->deplacer(); // Si la balle est sur le palet, elle ne se déplace pas (cf la méthode)
         }
 
-        if (m_camera->getActive() == true)
+        if (m_camera->getActive() == true) // Si on a activé la webcam alors on déplace le palet
             deplacerPalet(m_palet->getCentreX()+m_camera->getTranslation()/50.0f);
 
-        traitementCollisions();
+        traitementCollisions(); // On faire réagir les balles lorsqu'elles touchent des objets
+
     }
-    else
-        finDuJeu();
+    else // Si le joueur a perdu ou gagné, on arrête le jeu
+    {
+        std::cout<<"a"<<std::endl;
+        stopJeu();
+
+        if (m_perdu)
+        {
+            m_joueurs->getJoueurCourant()->setScore(m_score);
+        }
+
+        else if (m_gagne)
+        {
+            m_niveau++;
+            initialiserJeu();
+        }
+    }
 }
 
 void CasseBriques::traitementCollisions()
@@ -282,17 +297,22 @@ void CasseBriques::traitementCollisions()
     std::vector<Brique *>::iterator itBrique;
     while (itBalle != m_balles.end())
     {
-        if (m_sol->collision(*itBalle) == true)
+        // Collision avec le sol ?
+        if ((*itBalle)->getCentreY()+(*itBalle)->getRayon() <= 0.0f)
         {
             delete *itBalle;
             itBalle = m_balles.erase(itBalle);
-            m_score -= 200;
+            m_score -= 2000;
+            m_nombreBallesEnCours--;
         }
         else
         {
             // Collision avec le palet ?
             if ((*itBalle)->getEstSurPalet() == false && m_palet->collision(*itBalle) == true)
+            {
                 m_palet->traiterCollision(*itBalle);
+                m_score -= static_cast<int>(m_palet->getLargeur());
+            }
 
             // Collision avec un des murs ?
             for(Mur * mur : m_murs)
@@ -314,7 +334,7 @@ void CasseBriques::traitementCollisions()
                     }
                     delete *itBrique;
                     itBrique = m_briques.erase(itBrique); // On supprime la brique donc on redéfinit l'itérateur à la position courante
-                    m_score += 10;
+                    m_score += 100*m_nombreBallesEnCours;
                 }
                 else
                     ++itBrique; // Si la brique n'est pas supprimée on incrémente l'itérateur
@@ -325,22 +345,11 @@ void CasseBriques::traitementCollisions()
     }
 }
 
-void CasseBriques::finDuJeu()
+void CasseBriques::stopJeu()
 {
     m_timerGL.stop();
     m_timerGame.stop();
-    updateGL(); // Permet d'effacer la dernière balle si l'affichage n'a pas été mis à jour (décalage entre les timers)
-
-    if (m_perdu)
-    {
-        // On rentre les scores
-    }
-
-    else if (m_gagne)
-    {
-        m_niveau++;
-        initialiserJeu();
-    }
+    updateGL(); // Permet d'effacer la dernière balle si l'affichage n'a pas été mis à jour (décalage entre les timers)    
 }
 
 void CasseBriques::initialiserJeu()
@@ -357,7 +366,6 @@ void CasseBriques::initialiserJeu()
         delete brique;
     m_briques.clear();
 
-    delete m_sol;
     delete m_palet;
 
     m_nombreBallesRestantes = m_nombreBallesInitial;
@@ -453,11 +461,13 @@ void CasseBriques::mouseMoveEvent(QMouseEvent *event)
     }
 
     event->accept();
+    if (!m_gagne && !m_perdu) updateGame();
     updateGL();
 }
 
 void CasseBriques::nouvellePartie()
 {
+    stopJeu();
     m_niveau = 1;
     m_score = 0;
     m_perdu = false;

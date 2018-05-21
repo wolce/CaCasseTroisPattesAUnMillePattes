@@ -21,14 +21,14 @@ public:
     float getAngleMin() const {return m_angleMin;}
     void setLargeur(float largeur);
     void setCentreX(float positionCentreX);
+    float getLargeur() const {return m_largeur;}
 private:
     float m_vitesse;
     float m_position[2]; // Position du centre
-    float m_largeur;
-    float m_hauteur;
     float m_xMin;
     float m_xMax;
     float m_angleMin; // L'angle maximal dont peut dévier la balle en touchant le palet
+    int m_codeDerniereCollision; // 1 : gauche / 2 : haut / 3 : droite / 0 : pas de collision
 };
 
 #endif // PALET_H

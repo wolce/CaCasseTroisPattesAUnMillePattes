@@ -8,7 +8,6 @@
 ## A faire (bonus)
 
 ```
-� Sauvegarde du score/nom de joueur et affichage du classement 
 ```
 
 ## Fait
@@ -25,4 +24,5 @@ Facultatif :
 � G�n�ration al�atoire d�un nouveau niveau avec une vitesse sup�rieure de la boule par rapport au niveau pr�c�dent. 
 � Calcul des points. 
 � Choix de la taille du palet par le joueur.
+� Sauvegarde du score/nom de joueur et affichage du classement 
 ```

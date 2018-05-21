@@ -10,8 +10,8 @@ class Palet;
 class Mur;
 class Balle;
 class Brique;
-class Sol;
 class Camera;
+class ListeJoueurs;
 
 // Classe dediee a l'affichage d'une scene OpenGL
 class CasseBriques : public QGLWidget
@@ -20,32 +20,32 @@ class CasseBriques : public QGLWidget
 
 public:
 
-    // Constructeur
-    CasseBriques(Camera* camera, QWidget * parent = nullptr);
+    /******************************/
+    /* Constructeur & Destructeur */
+    /******************************/
 
-    // Destructeur
+    CasseBriques(Camera* camera, ListeJoueurs *joueurs, QWidget * parent = nullptr);
     ~CasseBriques();
 
-    // Traitement des collisions pendant une partie
-    void traitementCollisions();
+    /***************/
+    /* Etat du jeu */
+    /***************/
 
     // Initialisation du jeu
     void initialiserJeu();
 
-    // Définit le déroulement d'une fin de partie
-    void finDuJeu();
+    // Stoppe la partie
+    void stopJeu();
 
-    // Teste si la partie doit continuer ou non
-    void testJeuEnCours();
-
-    // Permet au joueur de choisir la taille du palet
-    void setLargeurPalet(float largeur);
-    float getLargeurPalet() const {return m_largeurPalet;}
-
-    void chargerNiveau();
-
+    // Recommencer une partie depuis le début
     void nouvellePartie();
 
+    /************************/
+    /* Actions sur le palet */
+    /************************/
+
+    void setLargeurPalet(float largeur);
+    float getLargeurPalet() const {return m_largeurPalet;}
     void deplacerPalet(float x);
 
 protected:
@@ -59,7 +59,7 @@ protected:
     // Fonction d'affichage
     void paintGL();
 
-    // Fonctions de gestion d'interactions
+    // Fonctions de gestion des interactions
     void keyPressEvent(QKeyEvent * event);
     void mouseMoveEvent(QMouseEvent *event);
 
@@ -70,6 +70,26 @@ private slots:
 
 private:
 
+    /************/
+    /* Méthodes */
+    /************/
+
+    // Charger une configuration de briques à partir d'un fichier
+    void chargerNiveau();
+
+    // Traitement des collisions pendant une partie
+    void traitementCollisions();
+
+    // Teste si la partie doit continuer ou non
+    void testJeuEnCours();
+
+    /*************/
+    /* Attributs */
+    /*************/
+
+    // Joueurs
+    ListeJoueurs* m_joueurs;
+
     // Caméra
     Camera* m_camera;
 
@@ -79,7 +99,6 @@ private:
 
     // Eléments du jeu
     Palet *m_palet;
-    Sol *m_sol;
     std::vector<Mur *> m_murs;
     std::vector<Balle *> m_balles;
     std::vector<Brique *> m_briques;
@@ -87,6 +106,7 @@ private:
     // Attributs de configuration d'une partie
     unsigned int m_nombreBallesInitial;
     unsigned int m_nombreBallesRestantes;
+    unsigned int m_nombreBallesEnCours;
     double m_score;
     int m_niveau;
 

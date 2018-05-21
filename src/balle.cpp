@@ -20,7 +20,7 @@ Balle::Balle(float x, float y, float dirX, float dirY)
     m_direction[0] = dirX;
     m_direction[1] = dirY;
 
-    m_vitesse = 0.2f;
+    m_vitesse = 0.05f;
 }
 
 Balle::Balle(Palet *palet, int niveau)
@@ -44,7 +44,7 @@ Balle::Balle(Palet *palet, int niveau)
     m_direction[0] = cos(dir);
     m_direction[1] = sin(dir);
 
-    m_vitesse = 0.2f*log(niveau+1);
+    m_vitesse = 0.2f*log(sqrt(niveau+1));
     m_estSurPalet = true;
 }
 
@@ -59,8 +59,17 @@ void Balle::Display()
 
 void Balle::deplacer()
 {
-    m_positionCentre[0] += m_direction[0]*m_vitesse;
-    m_positionCentre[1] += m_direction[1]*m_vitesse;
+    if (m_estSurPalet == false)
+    {
+        m_positionCentre[0] += m_direction[0]*m_vitesse;
+        m_positionCentre[1] += m_direction[1]*m_vitesse;
+    }
+}
+
+void Balle::envoyerBalle()
+{
+    m_estSurPalet = false;
+    deplacer();
 }
 
 Balle::~Balle()

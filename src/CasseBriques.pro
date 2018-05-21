@@ -32,22 +32,27 @@ SOURCES	+= main.cpp \
     bloc.cpp \
     mur.cpp \
     brique.cpp \
-    sol.cpp \
     cassebriques.cpp \
     mainwindow.cpp \
     parametresdialog.cpp \
-    camera.cpp
+    camera.cpp \
+    joueur.cpp \
+    listejoueurs.cpp \
+    joueursdialog.cpp
 HEADERS += \
     balle.hpp \
     palet.hpp \
     bloc.hpp \
     mur.hpp \
     brique.hpp \
-    sol.hpp \
     cassebriques.hpp \
     mainwindow.hpp \
     parametresdialog.hpp \
-    camera.hpp
+    camera.hpp \
+    joueur.hpp \
+    listejoueurs.hpp \
+    joueursdialog.hpp
 
 FORMS += \
-    parametresdialog.ui
+    parametresdialog.ui \
+    joueursdialog.ui
