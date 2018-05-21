@@ -37,6 +37,9 @@ public:
     // Stoppe la partie
     void stopJeu();
 
+    // Lance la partie
+    void startJeu();
+
     // Recommencer une partie depuis le début
     void nouvellePartie();
 
@@ -123,6 +126,7 @@ private:
     bool m_balleSurPalet; // Indique si une des balles présentes en jeu est sur le palet (ie n'a pas encore été lancée)
     bool m_perdu; // Indique si le joueur a perdu
     bool m_gagne; //Indique si le joueur a gagné
+    bool m_pause;
 
 };
 

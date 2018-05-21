@@ -69,6 +69,7 @@ CasseBriques::CasseBriques(Camera *camera, ListeJoueurs *joueurs, QWidget * pare
     m_balleSurPalet = false;
     m_perdu = false;
     m_gagne = false;
+    m_pause = false;
 }
 
 // Fonction d'initialisation d'OpenGL
@@ -175,67 +176,77 @@ void CasseBriques::paintGL()
     // Affichage du texte "Perdu" si l'utilisateur a perdu
     if (m_perdu)
         renderText(247.5f, 500.0f, "PERDU", QFont("Comic Sans MS", 20));
+
+    if (m_pause && !m_perdu)
+        renderText(247.5f, 500.0f, "PAUSE", QFont("Comic Sans MS", 20));
 }
 
 // Fonction de gestion d'interactions clavier
 void CasseBriques::keyPressEvent(QKeyEvent * event)
 {
-
-        switch(event->key())
+    switch(event->key())
+    {
+        // Déplacer le palet à gauche
+        case Qt::Key_Left:
         {
-            // Déplacer le palet à gauche
-            case Qt::Key_Left:
-            {
-                deplacerPalet(m_palet->getCentreX()-1.0f);
-                break;
-            }
-
-            // Déplacer le palet à droite
-            case Qt::Key_Right:
-            {
-                deplacerPalet(m_palet->getCentreX()+1.0f);
-                break;
-            }
-
-            // Charger une balle sur le palet et la lancer
-            case Qt::Key_Space:
-            {
-                if (!m_perdu && !m_gagne) // Cela est possible que si une partie est en cours
-                {
-                    for (Balle * balle : m_balles) // Si une des balles est sur le palet, alors on l'envoie
-                    {
-                        if (balle->getEstSurPalet() == true)
-                        {
-                            balle->envoyerBalle();
-                            m_nombreBallesRestantes--;
-                            m_nombreBallesEnCours++;
-                        }
-                    }
-
-                    if (m_balleSurPalet == false && m_nombreBallesRestantes > 0) // S'il n'y a pas de balle sur le palet et qu'il reste des balles en stock, alors on en charge une sur le palet
-                    {
-                        m_balles.push_back(new Balle(m_palet, m_niveau));
-                        m_balleSurPalet = true;
-                    }
-                    else // Sinon c'est qu'on vient d'envoyer une balle ou qu'on n'en a plus en stock
-                        m_balleSurPalet = false;
-                }
-
-                break;
-            }
-
-            default:
-            {
-                // Ignorer l'evenement
-                event->ignore();
-                return;
-            }
+            if (!m_pause) deplacerPalet(m_palet->getCentreX()-1.0f);
+            break;
         }
 
-        // Acceptation de l'evenement et mise a jour de la scene
-        event->accept();
-        if (!m_gagne && !m_perdu) updateGame();
-        updateGL();
+        // Déplacer le palet à droite
+        case Qt::Key_Right:
+        {
+            if (!m_pause) deplacerPalet(m_palet->getCentreX()+1.0f);
+            break;
+        }
+
+        // Charger une balle sur le palet et la lancer
+        case Qt::Key_Space:
+        {
+            if (!m_perdu && !m_gagne && !m_pause) // Cela est possible que si une partie est en cours
+            {
+                for (Balle * balle : m_balles) // Si une des balles est sur le palet, alors on l'envoie
+                {
+                    if (balle->getEstSurPalet() == true)
+                    {
+                        balle->envoyerBalle();
+                        m_nombreBallesRestantes--;
+                        m_nombreBallesEnCours++;
+                    }
+                }
+
+                if (m_balleSurPalet == false && m_nombreBallesRestantes > 0) // S'il n'y a pas de balle sur le palet et qu'il reste des balles en stock, alors on en charge une sur le palet
+                {
+                    m_balles.push_back(new Balle(m_palet, m_niveau));
+                    m_balleSurPalet = true;
+                }
+                else // Sinon c'est qu'on vient d'envoyer une balle ou qu'on n'en a plus en stock
+                    m_balleSurPalet = false;
+            }
+
+            break;
+        }
+
+        case Qt::Key_P:
+        {
+            if (m_pause)
+                startJeu();
+            else
+                stopJeu();
+        }
+
+        default:
+        {
+            // Ignorer l'evenement
+            event->ignore();
+            return;
+        }
+    }
+
+    // Acceptation de l'evenement et mise a jour de la scene
+    event->accept();
+    if (!m_gagne && !m_perdu && !m_pause) updateGame();
+    if (!m_pause) updateGL();
 }
 
 CasseBriques::~CasseBriques()
@@ -259,7 +270,7 @@ void CasseBriques::updateGame()
 {
     testJeuEnCours(); // On regarde si le joueur a gagné ou perdu
 
-    if (!m_gagne && !m_perdu)
+    if (!m_gagne && !m_perdu && !m_pause)
     {
         for(Balle * balle : m_balles) // On déplace chaque balle
         {
@@ -272,9 +283,8 @@ void CasseBriques::updateGame()
         traitementCollisions(); // On faire réagir les balles lorsqu'elles touchent des objets
 
     }
-    else // Si le joueur a perdu ou gagné, on arrête le jeu
+    else if (m_gagne || m_perdu)// Si le joueur a perdu ou gagné, on arrête le jeu
     {
-        std::cout<<"a"<<std::endl;
         stopJeu();
 
         if (m_perdu)
@@ -349,7 +359,15 @@ void CasseBriques::stopJeu()
 {
     m_timerGL.stop();
     m_timerGame.stop();
-    updateGL(); // Permet d'effacer la dernière balle si l'affichage n'a pas été mis à jour (décalage entre les timers)    
+    m_pause = true;
+    updateGL();
+}
+
+void CasseBriques::startJeu()
+{
+    m_timerGL.start();
+    m_timerGame.start();
+    m_pause = false;
 }
 
 void CasseBriques::initialiserJeu()
@@ -373,8 +391,8 @@ void CasseBriques::initialiserJeu()
     initializeGL();
 
     m_gagne = false;
-    m_timerGame.start();
-    m_timerGL.start();
+
+    startJeu();
 }
 
 void CasseBriques::testJeuEnCours()
@@ -461,8 +479,8 @@ void CasseBriques::mouseMoveEvent(QMouseEvent *event)
     }
 
     event->accept();
-    if (!m_gagne && !m_perdu) updateGame();
-    updateGL();
+    if (!m_gagne && !m_perdu &&!m_pause) updateGame();
+    if (!m_pause) updateGL();
 }
 
 void CasseBriques::nouvellePartie()
@@ -472,6 +490,7 @@ void CasseBriques::nouvellePartie()
     m_score = 0;
     m_perdu = false;
     m_gagne = false;
+    m_pause = false;
     initialiserJeu();
 }
 
