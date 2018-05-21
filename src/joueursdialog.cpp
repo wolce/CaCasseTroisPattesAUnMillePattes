@@ -1,5 +1,6 @@
 #include <QInputDialog>
 #include <QMessageBox>
+#include <map>
 #include "joueursdialog.hpp"
 #include "listejoueurs.hpp"
 #include "ui_joueursdialog.h"
@@ -25,6 +26,22 @@ JoueursDialog::JoueursDialog(ListeJoueurs* joueurs, QWidget *parent) :
         QString nom=QString::fromStdString(m_joueurs->getJoueurCourant()->getNom());
         ui->labelJoueurCourant->setText("Joueur sélectionné : " + nom);
     }
+
+    // On affiche les meilleurs scores
+    int i=0;
+    std::map<long,std::string> meilleursScores;
+    m_joueurs->getMeilleursScores(meilleursScores);
+    for (std::map<long,std::string>::const_iterator it=meilleursScores.end() ; it!=meilleursScores.begin() ; it--)
+    {
+        ui->tableWidgetMeilleursJoueurs->setItem(i, 0, new QTableWidgetItem(QString("%1").arg((it->second).c_str())));
+        ui->tableWidgetMeilleursJoueurs->setItem(i, 1, new QTableWidgetItem(QString("%1").arg(it->first)));
+        i++;
+    }
+
+    // On retire la première ligne qui contient la somme des lignes
+    ui->tableWidgetMeilleursJoueurs->removeRow(0);
+    ui->tableWidgetMeilleursJoueurs->insertRow(9);
+
 }
 
 JoueursDialog::~JoueursDialog()

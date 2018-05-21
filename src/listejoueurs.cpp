@@ -1,4 +1,6 @@
 #include <fstream>
+#include <algorithm>
+#include <map>
 #include "listejoueurs.hpp"
 
 #include <iostream>
@@ -8,7 +10,6 @@ using namespace std;
 ListeJoueurs::ListeJoueurs()
 {
     m_joueurCourant = NULL;
-    m_cheminFichierJoueurs = "debug/niveaux.txt";
 }
 
 ListeJoueurs::~ListeJoueurs()
@@ -51,16 +52,11 @@ void ListeJoueurs::sauver(ofstream &os)
     for (iterator it=begin() ; it!=end() ; it++) it->sauver(os);
 }
 
-/*
-void ListeJoueurs::nouveauJoueur(string nom)
+void ListeJoueurs::getMeilleursScores(map<long,string> & meilleursScores)
 {
-    push_back(Joueur(nom));
-
-    ofstream fichier(m_cheminFichierJoueurs.c_str(), ios::out | ios::app);
-
-    if (fichier)
+    for (iterator it=begin() ; it!=end() ; it++)
     {
-        fichier << nom << ';' << endl;
-        fichier.close();
+        for (int i=0 ; i<10 ; ++i)
+            meilleursScores.insert(make_pair(it->getMeilleursScores(i),it->getNom()));
     }
-}*/
+}

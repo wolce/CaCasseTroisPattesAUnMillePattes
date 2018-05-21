@@ -143,7 +143,7 @@
          <item>
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Meilleurs joueurs</string>
+            <string>Meilleurs scores</string>
            </property>
           </widget>
          </item>
