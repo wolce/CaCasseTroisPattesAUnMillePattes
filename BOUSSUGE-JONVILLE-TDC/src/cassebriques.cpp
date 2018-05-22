@@ -3,6 +3,7 @@
 #include <QTimer>
 #include <QKeyEvent>
 #include <fstream>
+#include <QDir>
 #include "mur.hpp"
 #include "palet.hpp"
 #include "balle.hpp"
@@ -19,6 +20,8 @@
 #define MAX_DIMENSION   50.0f
 float WIDTH = 2*MAX_DIMENSION;
 float HEIGHT = 2*MAX_DIMENSION * WIN_HEIGHT / WIN_WIDTH;
+
+using namespace std;
 
 CasseBriques::CasseBriques(Camera *camera, ListeJoueurs *joueurs, QWidget * parent) : QGLWidget(parent)
 {
@@ -189,14 +192,28 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
         // Déplacer le palet à gauche
         case Qt::Key_Left:
         {
-            if (!m_pause) deplacerPalet(m_palet->getCentreX()-1.0f);
+            if (!m_pause) {
+                m_palet->decaler(-0.4f,0.0f);
+                for (Balle * balle : m_balles)
+                {
+                    if (balle->getEstSurPalet() == true)
+                        balle->setCentreX(m_palet->getCentreX());
+                }
+            }
             break;
         }
 
         // Déplacer le palet à droite
         case Qt::Key_Right:
         {
-            if (!m_pause) deplacerPalet(m_palet->getCentreX()+1.0f);
+            if (!m_pause) {
+                m_palet->decaler(0.4f,0.0f);
+                for (Balle * balle : m_balles)
+                {
+                    if (balle->getEstSurPalet() == true)
+                        balle->setCentreX(m_palet->getCentreX());
+                }
+            }
             break;
         }
 
@@ -230,9 +247,15 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
         case Qt::Key_P:
         {
             if (m_pause)
+            {
                 startJeu();
+                m_pause = false;
+            }
             else
+            {
                 stopJeu();
+                m_pause = true;
+            }
         }
 
         default:
@@ -270,6 +293,18 @@ void CasseBriques::updateGame()
 {
     testJeuEnCours(); // On regarde si le joueur a gagné ou perdu
 
+    if (m_camera->getActive() == true) // Si on a activé la webcam alors on déplace le palet
+    {
+        if (!m_pause) {
+            m_palet->decaler(m_camera->getTranslation()/50.0f,0.0f);
+            for (Balle * balle : m_balles)
+            {
+                if (balle->getEstSurPalet() == true)
+                    balle->setCentreX(m_palet->getCentreX());
+            }
+        }
+    }
+
     if (!m_gagne && !m_perdu && !m_pause)
     {
         for(Balle * balle : m_balles) // On déplace chaque balle
@@ -277,12 +312,10 @@ void CasseBriques::updateGame()
             balle->deplacer(); // Si la balle est sur le palet, elle ne se déplace pas (cf la méthode)
         }
 
-        if (m_camera->getActive() == true) // Si on a activé la webcam alors on déplace le palet
-            deplacerPalet(m_palet->getCentreX()+m_camera->getTranslation()/50.0f);
-
         traitementCollisions(); // On faire réagir les balles lorsqu'elles touchent des objets
 
     }
+
     else if (m_gagne || m_perdu) // Si le joueur a perdu ou gagné, on arrête le jeu
     {
         stopJeu();
@@ -359,7 +392,6 @@ void CasseBriques::stopJeu()
 {
     m_timerGL.stop();
     m_timerGame.stop();
-    m_pause = true;
     updateGL();
 }
 
@@ -367,7 +399,6 @@ void CasseBriques::startJeu()
 {
     m_timerGL.start();
     m_timerGame.start();
-    m_pause = false;
 }
 
 void CasseBriques::initialiserJeu()
@@ -415,37 +446,37 @@ void CasseBriques::setLargeurPalet(float largeur)
 
 void CasseBriques::chargerNiveau()
 {
-    std::ifstream fichier("debug/niveaux.txt");
-
-    std::string ligne;
-    char a;
-    int nombreNiveaux = 0;
-    int choixNiveau;
-    int i = 0;
-
-    if(fichier) // Si l'ouverture du fichier s'est bien déroulée, alors on peut effectuer le traitement suivant
+    QString name=QString("%1/niveaux.txt").arg(QDir::homePath());
+    std::ifstream is(name.toStdString().c_str());
+    if (is.good())
     {
-        while (std::getline(fichier, ligne))
+        std::string ligne;
+        char a;
+        int nombreNiveaux = 0;
+        int choixNiveau;
+        int i = 0;
+
+        while (std::getline(is, ligne))
         {
             if (ligne == "*")
                 nombreNiveaux++;
         }
 
-        fichier.clear();
-        fichier.seekg(0, std::ios::beg);
+        is.clear();
+        is.seekg(0, std::ios::beg);
 
         choixNiveau = rand()%(nombreNiveaux)+1;
 
         while(i < choixNiveau)
         {
-            std::getline(fichier, ligne);
+            std::getline(is, ligne);
             if (ligne == "*")
                 ++i;
         }
 
-        fichier >> m_briquesParLigne;
-        fichier >> m_briquesParColonne;
-        fichier.get(a);
+        is >> m_briquesParLigne;
+        is >> m_briquesParColonne;
+        is.get(a);
 
         m_largeurBrique = (WIDTH-m_espaceEntreBriquesLigne - 4.0f)/m_briquesParLigne - m_espaceEntreBriquesLigne;
 
@@ -453,14 +484,62 @@ void CasseBriques::chargerNiveau()
         {
             for (int j = 0 ; j < m_briquesParLigne ; ++j)
             {
-                fichier.get(a);
+                is.get(a);
                 if (a == '1')
                 {
                     m_briques.push_back(new Brique((j+1)*m_espaceEntreBriquesLigne + 2.0f + j*m_largeurBrique, 123.0f-(i+1)*m_espaceEntreBriquesColonne - i*m_largeurBrique/3.0f, m_largeurBrique));
                 }
             }
-            fichier.get(a);
+            is.get(a);
         }
+    }
+
+    else
+    {
+        QString name=QString("%1/niveaux.txt").arg(QDir::homePath());
+        std::ofstream os(name.toStdString().c_str());
+
+        os << "*" << endl;
+        os << "12" << endl;
+        os << "10" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "*" << endl;
+        os << "12" << endl;
+        os << "10" << endl;
+        os << "111111111111" << endl;
+        os << "000000000000" << endl;
+        os << "111111111111" << endl;
+        os << "000000000000" << endl;
+        os << "111111111111" << endl;
+        os << "000000000000" << endl;
+        os << "111111111111" << endl;
+        os << "000000000000" << endl;
+        os << "111111111111" << endl;
+        os << "000000000000" << endl;
+        os << "*" << endl;
+        os << "12" << endl;
+        os << "10" << endl;
+        os << "000000000000" << endl;
+        os << "000000000000" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "000000000000" << endl;
+        os << "000000000000" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "000000000000" << endl;
+        os << "000000000000" << endl;
+
+        chargerNiveau();
     }
 }
 

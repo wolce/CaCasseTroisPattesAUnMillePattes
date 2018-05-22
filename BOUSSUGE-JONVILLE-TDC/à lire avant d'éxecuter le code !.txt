@@ -1,2 +1,0 @@
-Pour avoir les niveaux qui se génèrent aléatoirement, nous devons mettre
- le fichier niveaux.txt ci joint dans le dossier debug créé lors de l'exécution du projet dans le dossier BUILD.
