@@ -3,6 +3,7 @@
 #include <QTimer>
 #include <QKeyEvent>
 #include <fstream>
+#include <QDir>
 #include "mur.hpp"
 #include "palet.hpp"
 #include "balle.hpp"
@@ -19,6 +20,8 @@
 #define MAX_DIMENSION   50.0f
 float WIDTH = 2*MAX_DIMENSION;
 float HEIGHT = 2*MAX_DIMENSION * WIN_HEIGHT / WIN_WIDTH;
+
+using namespace std;
 
 CasseBriques::CasseBriques(Camera *camera, ListeJoueurs *joueurs, QWidget * parent) : QGLWidget(parent)
 {
@@ -415,37 +418,37 @@ void CasseBriques::setLargeurPalet(float largeur)
 
 void CasseBriques::chargerNiveau()
 {
-    std::ifstream fichier("debug/niveaux.txt");
-
-    std::string ligne;
-    char a;
-    int nombreNiveaux = 0;
-    int choixNiveau;
-    int i = 0;
-
-    if(fichier) // Si l'ouverture du fichier s'est bien déroulée, alors on peut effectuer le traitement suivant
+    QString name=QString("%1/niveaux.txt").arg(QDir::homePath());
+    std::ifstream is(name.toStdString().c_str());
+    if (is.good())
     {
-        while (std::getline(fichier, ligne))
+        std::string ligne;
+        char a;
+        int nombreNiveaux = 0;
+        int choixNiveau;
+        int i = 0;
+
+        while (std::getline(is, ligne))
         {
             if (ligne == "*")
                 nombreNiveaux++;
         }
 
-        fichier.clear();
-        fichier.seekg(0, std::ios::beg);
+        is.clear();
+        is.seekg(0, std::ios::beg);
 
         choixNiveau = rand()%(nombreNiveaux)+1;
 
         while(i < choixNiveau)
         {
-            std::getline(fichier, ligne);
+            std::getline(is, ligne);
             if (ligne == "*")
                 ++i;
         }
 
-        fichier >> m_briquesParLigne;
-        fichier >> m_briquesParColonne;
-        fichier.get(a);
+        is >> m_briquesParLigne;
+        is >> m_briquesParColonne;
+        is.get(a);
 
         m_largeurBrique = (WIDTH-m_espaceEntreBriquesLigne - 4.0f)/m_briquesParLigne - m_espaceEntreBriquesLigne;
 
@@ -453,14 +456,62 @@ void CasseBriques::chargerNiveau()
         {
             for (int j = 0 ; j < m_briquesParLigne ; ++j)
             {
-                fichier.get(a);
+                is.get(a);
                 if (a == '1')
                 {
                     m_briques.push_back(new Brique((j+1)*m_espaceEntreBriquesLigne + 2.0f + j*m_largeurBrique, 123.0f-(i+1)*m_espaceEntreBriquesColonne - i*m_largeurBrique/3.0f, m_largeurBrique));
                 }
             }
-            fichier.get(a);
+            is.get(a);
         }
+    }
+
+    else
+    {
+        QString name=QString("%1/niveaux.txt").arg(QDir::homePath());
+        std::ofstream os(name.toStdString().c_str());
+
+        os << "*" << endl;
+        os << "12" << endl;
+        os << "10" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "*" << endl;
+        os << "12" << endl;
+        os << "10" << endl;
+        os << "111111111111" << endl;
+        os << "000000000000" << endl;
+        os << "111111111111" << endl;
+        os << "000000000000" << endl;
+        os << "111111111111" << endl;
+        os << "000000000000" << endl;
+        os << "111111111111" << endl;
+        os << "000000000000" << endl;
+        os << "111111111111" << endl;
+        os << "000000000000" << endl;
+        os << "*" << endl;
+        os << "12" << endl;
+        os << "10" << endl;
+        os << "000000000000" << endl;
+        os << "000000000000" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "000000000000" << endl;
+        os << "000000000000" << endl;
+        os << "111111111111" << endl;
+        os << "111111111111" << endl;
+        os << "000000000000" << endl;
+        os << "000000000000" << endl;
+
+        chargerNiveau();
     }
 }
 
