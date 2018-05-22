@@ -192,14 +192,28 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
         // Déplacer le palet à gauche
         case Qt::Key_Left:
         {
-            if (!m_pause) deplacerPalet(m_palet->getCentreX()-1.0f);
+            if (!m_pause) {
+                m_palet->decaler(-0.4f,0.0f);
+                for (Balle * balle : m_balles)
+                {
+                    if (balle->getEstSurPalet() == true)
+                        balle->setCentreX(m_palet->getCentreX());
+                }
+            }
             break;
         }
 
         // Déplacer le palet à droite
         case Qt::Key_Right:
         {
-            if (!m_pause) deplacerPalet(m_palet->getCentreX()+1.0f);
+            if (!m_pause) {
+                m_palet->decaler(0.4f,0.0f);
+                for (Balle * balle : m_balles)
+                {
+                    if (balle->getEstSurPalet() == true)
+                        balle->setCentreX(m_palet->getCentreX());
+                }
+            }
             break;
         }
 
@@ -233,9 +247,15 @@ void CasseBriques::keyPressEvent(QKeyEvent * event)
         case Qt::Key_P:
         {
             if (m_pause)
+            {
                 startJeu();
+                m_pause = false;
+            }
             else
+            {
                 stopJeu();
+                m_pause = true;
+            }
         }
 
         default:
@@ -273,6 +293,18 @@ void CasseBriques::updateGame()
 {
     testJeuEnCours(); // On regarde si le joueur a gagné ou perdu
 
+    if (m_camera->getActive() == true) // Si on a activé la webcam alors on déplace le palet
+    {
+        if (!m_pause) {
+            m_palet->decaler(m_camera->getTranslation()/50.0f,0.0f);
+            for (Balle * balle : m_balles)
+            {
+                if (balle->getEstSurPalet() == true)
+                    balle->setCentreX(m_palet->getCentreX());
+            }
+        }
+    }
+
     if (!m_gagne && !m_perdu && !m_pause)
     {
         for(Balle * balle : m_balles) // On déplace chaque balle
@@ -280,12 +312,10 @@ void CasseBriques::updateGame()
             balle->deplacer(); // Si la balle est sur le palet, elle ne se déplace pas (cf la méthode)
         }
 
-        if (m_camera->getActive() == true) // Si on a activé la webcam alors on déplace le palet
-            deplacerPalet(m_palet->getCentreX()+m_camera->getTranslation()/50.0f);
-
         traitementCollisions(); // On faire réagir les balles lorsqu'elles touchent des objets
 
     }
+
     else if (m_gagne || m_perdu) // Si le joueur a perdu ou gagné, on arrête le jeu
     {
         stopJeu();
@@ -362,7 +392,6 @@ void CasseBriques::stopJeu()
 {
     m_timerGL.stop();
     m_timerGame.stop();
-    m_pause = true;
     updateGL();
 }
 
@@ -370,7 +399,6 @@ void CasseBriques::startJeu()
 {
     m_timerGL.start();
     m_timerGame.start();
-    m_pause = false;
 }
 
 void CasseBriques::initialiserJeu()
