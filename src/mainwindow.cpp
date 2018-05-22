@@ -11,7 +11,7 @@
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
-    m_camera = new Camera(m_casseBriques);
+    m_camera = new Camera();
     m_joueurs = new ListeJoueurs();
     m_casseBriques = new CasseBriques(m_camera, m_joueurs, this);
 

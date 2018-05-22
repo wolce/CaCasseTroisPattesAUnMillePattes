@@ -7,9 +7,8 @@
 using namespace cv;
 using namespace std;
 
-Camera::Camera(CasseBriques* casseBriques)
+Camera::Camera()
 {
-    m_casseBriques = casseBriques;
     m_active = false;
     m_translation = 0.0f;
     setFixedSize(320,240);
