@@ -283,13 +283,13 @@ void CasseBriques::updateGame()
         traitementCollisions(); // On faire réagir les balles lorsqu'elles touchent des objets
 
     }
-    else if (m_gagne || m_perdu)// Si le joueur a perdu ou gagné, on arrête le jeu
+    else if (m_gagne || m_perdu) // Si le joueur a perdu ou gagné, on arrête le jeu
     {
         stopJeu();
 
         if (m_perdu)
         {
-            m_joueurs->getJoueurCourant()->setScore(m_score);
+            m_joueurs->setScore(m_score);
         }
 
         else if (m_gagne)

@@ -78,6 +78,10 @@ public:
 
 private:
 
+    /*************/
+    /* Attributs */
+    /*************/
+
     GLUquadric *m_sphere;
     float m_rayon;
     float m_couleur[3];

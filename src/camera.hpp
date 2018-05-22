@@ -59,6 +59,10 @@ public:
 
 private:
 
+    /*************/
+    /* Attributs */
+    /*************/
+
     bool m_active; // Indique l'état d'activité de la caméra
     QTimer m_timerCam; // Cadence des prises de vues
     std::queue<float> m_buffer; // Stocke les translations consécutives de la MAIN

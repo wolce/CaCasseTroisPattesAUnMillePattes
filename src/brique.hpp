@@ -41,6 +41,10 @@ public:
 
 private:
 
+    /*************/
+    /* Attributs */
+    /*************/
+
     float m_position[2]; // Position du coin supérieur gauche de la brique
 
 };
