@@ -15,20 +15,21 @@ class ParametresDialog : public QDialog
     Q_OBJECT
 
 public:
+     //Constructeur de notre boite de dialogue paramêtres. ces paramêtres sont l'inclusion de la caméra et la gtaille du palet
     explicit ParametresDialog(CasseBriques* casseBriques, Camera* camera, QWidget *parent = 0);
-    ~ParametresDialog();
+    ~ParametresDialog();//destructeur de la classe
 
 private:
-    Ui::ParametresDialog *ui;
-    CasseBriques* m_casseBriques;
-    Camera* m_camera;
+    Ui::ParametresDialog *ui;//interface graphique parametre
+    CasseBriques* m_casseBriques;// utiliser pour modifier la longueur du palet
+    Camera* m_camera;//Utiliser ou non la caméra
 
 private slots:
-    void slotLargeurPalet();
-    void slotActiverCamera();
+    void slotLargeurPalet();//slot pour modifier la valeur de la largeur du palet
+    void slotActiverCamera();//activer ou non la caméra
 
 signals:
-    void updateWidgetCentral();
+    void updateWidgetCentral();//fonction pour rafraichir notre widget
 };
 
 #endif // PARAMETRESDIALOG_H
